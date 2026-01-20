@@ -1,0 +1,58 @@
+{
+  "name": "@originalix/ledger-adapter",
+  "version": "0.0.1",
+  "description": "Ledger hardware wallet adapter for OneKey",
+  "author": "OneKey",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"No tests yet\""
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OneKeyHQ/hardware-wallet-kit.git",
+    "directory": "packages/ledger-adapter"
+  },
+  "keywords": [
+    "ledger",
+    "hardware-wallet",
+    "onekey",
+    "crypto"
+  ],
+  "dependencies": {
+    "rxjs": "^7.8.1"
+  },
+  "peerDependencies": {
+    "@ledgerhq/device-management-kit": "^1.0.0",
+    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0"
+  },
+  "devDependencies": {
+    "@ledgerhq/device-management-kit": "^1.0.0",
+    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
+    "rimraf": "^5.0.0"
+  }
+}

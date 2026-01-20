@@ -1,0 +1,33 @@
+{
+  "name": "hardware-wallet-kit",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "dev": "yarn workspaces run dev",
+    "test": "yarn workspaces run test",
+    "lint": "eslint packages --ext .ts,.tsx",
+    "lint:fix": "eslint packages --ext .ts,.tsx --fix",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,json}\"",
+    "clean": "yarn workspaces run clean",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "yarn build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.0",
+    "prettier": "^3.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}
