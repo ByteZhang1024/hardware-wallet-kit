@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "paths": {
+      "@bytezhang/hardware-wallet-core": ["../../packages/core/src"],
+      "@bytezhang/trezor-transport-web": ["../../packages/trezor-transport-web/src"],
+      "@bytezhang/ledger-transport-web": ["../../packages/ledger-transport-web/src"],
+      "@bytezhang/trezor-adapter": ["../../packages/trezor-adapter/src"],
+      "@bytezhang/ledger-adapter": ["../../packages/ledger-adapter/src"],
+      "@examples/shared": ["../shared/src"]
+    }
+  },
+  "include": ["src"]
+}

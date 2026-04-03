@@ -1,0 +1,23 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@bytezhang/hardware-wallet-core": [
+        "../../packages/core/src"
+      ],
+      "@bytezhang/trezor-adapter": [
+        "../../packages/trezor-adapter/src"
+      ],
+      "@bytezhang/ledger-adapter": [
+        "../../packages/ledger-adapter/src"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
+}

@@ -6,8 +6,8 @@ OneKey's unified hardware wallet SDK adapter for Ledger and Trezor devices.
 
 | Package | Description | Status |
 |---------|-------------|--------|
-| [@onekeyfe/ledger-adapter](./packages/ledger-adapter) | Ledger hardware wallet adapter | 🚧 In Development |
-| [@onekeyfe/trezor-adapter](./packages/trezor-adapter) | Trezor hardware wallet adapter | 📋 Planned |
+| [@bytezhang/ledger-adapter](./packages/ledger-adapter) | Ledger hardware wallet adapter | 🚧 In Development |
+| [@bytezhang/trezor-adapter](./packages/trezor-adapter) | Trezor hardware wallet adapter | 📋 Planned |
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ hardware-wallet-kit/
 │   ├── ledger-adapter/     # Ledger SDK wrapper
 │   └── trezor-adapter/     # Trezor SDK wrapper (planned)
 ├── examples/               # Demo applications
-│   ├── web-demo/          # Web test page
+│   ├── web/               # Web test page
 │   └── expo-demo/         # React Native demo
 ├── docs/
 │   └── ledger/            # Ledger implementation docs

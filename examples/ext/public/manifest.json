@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "HWK Demo Extension",
+  "version": "0.0.1",
+  "description": "Hardware Wallet Kit demo for Chrome Extension",
+  "permissions": ["offscreen"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_popup": "popup/index.html"
+  },
+  "options_ui": {
+    "page": "pairing/index.html",
+    "open_in_tab": true
+  }
+}

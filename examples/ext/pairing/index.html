@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>USB Device Pairing</title>
+  <style>
+    body { font-family: system-ui; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #1a1a2e; color: #eee; }
+    .container { text-align: center; }
+    button { padding: 12px 24px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; background: #e94560; color: #fff; margin: 8px; }
+    button:hover { background: #c73e54; }
+    .status { margin-top: 16px; color: #0f0; }
+    .error { color: #f44; }
+    .debug-panel { margin-top: 32px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px; text-align: left; max-width: 600px; width: 100%; }
+    .debug-panel h3 { color: #f0883e; margin: 0 0 12px; font-size: 14px; }
+    .debug-section { margin-bottom: 12px; }
+    .debug-section-label { color: #8b949e; font-size: 11px; margin-bottom: 6px; }
+    .debug-btn { padding: 6px 12px; font-size: 12px; font-family: monospace; border: none; border-radius: 4px; color: #fff; cursor: pointer; margin: 0 4px 4px 0; }
+    .debug-btn:hover { opacity: 0.85; }
+    .debug-btn.blue { background: #1f6feb; }
+    .debug-btn.purple { background: #8957e5; }
+    .debug-btn.dark-purple { background: #6e40c9; }
+    .debug-btn.gray { background: #6e7681; }
+    #debug-log { background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 8px; max-height: 300px; overflow: auto; font-family: monospace; font-size: 11px; line-height: 1.5; color: #c9d1d9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>USB Device Pairing</h2>
+    <p>One-time setup: authorize your hardware wallet for this extension</p>
+    <button id="trezor-btn">Pair Trezor (USB)</button>
+    <button id="ledger-btn">Pair Ledger (HID)</button>
+    <div id="status"></div>
+
+    <div class="debug-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>🔧 WebAPI Debug Panel</h3>
+        <button class="debug-btn gray" id="debug-clear">Clear</button>
+      </div>
+
+      <div class="debug-section">
+        <div class="debug-section-label">WebHID (Ledger)</div>
+        <button class="debug-btn blue" id="hid-get">hid.getDevices()</button>
+        <button class="debug-btn purple" id="hid-req-ledger">hid.requestDevice(Ledger)</button>
+        <button class="debug-btn dark-purple" id="hid-req-all">hid.requestDevice(no filter)</button>
+      </div>
+
+      <div class="debug-section">
+        <div class="debug-section-label">WebUSB (Trezor)</div>
+        <button class="debug-btn blue" id="usb-get">usb.getDevices()</button>
+        <button class="debug-btn purple" id="usb-req-trezor">usb.requestDevice(Trezor)</button>
+      </div>
+
+      <div id="debug-log">Click buttons above to test browser APIs...</div>
+    </div>
+  </div>
+  <script type="module" src="../src/pairing/main.ts"></script>
+</body>
+</html>

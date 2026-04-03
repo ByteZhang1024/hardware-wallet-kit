@@ -1,0 +1,23 @@
+{
+  "basePath": "./packages",
+  "targetEnvVar": "APP_MONOREPO_LOCAL_PATH",
+  "defaultWatchDir": "dist",
+  "projects": [
+    "core",
+    "transport-core",
+    "connector-loader",
+    "ledger-adapter",
+    "ledger-connector-webhid",
+    "ledger-connector-ble",
+    "trezor-adapter",
+    "trezor-connector",
+    "trezor-transport-ext",
+    "trezor-transport-electron"
+  ],
+  "specialProjects": {},
+  "ignoredPaths": [
+    "node_modules",
+    ".git",
+    "*.log"
+  ]
+}

@@ -1,10 +1,27 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: [
+    'src/index.ts',
+    'src/entries/node.ts',
+    'src/entries/react-native.ts',
+    'src/entries/web.ts',
+  ],
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ['@ledgerhq/device-management-kit', '@ledgerhq/device-signer-kit-ethereum', 'rxjs'],
+  external: [
+    '@ledgerhq/device-management-kit',
+    '@ledgerhq/device-signer-kit-ethereum',
+    '@ledgerhq/device-signer-kit-bitcoin',
+    '@ledgerhq/device-signer-kit-solana',
+    '@ledgerhq/device-transport-kit-node-hid',
+    '@ledgerhq/device-transport-kit-react-native-ble',
+    '@ledgerhq/device-transport-kit-web-hid',
+    '@bytezhang/hardware-wallet-core',
+    'react-native',
+    'react-native-ble-plx',
+    'rxjs',
+  ],
 });

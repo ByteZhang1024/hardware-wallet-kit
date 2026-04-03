@@ -1,7 +1,45 @@
-/**
- * @originalix/ledger-adapter
- *
- * Ledger hardware wallet adapter for OneKey
- */
+// Adapter
+export { LedgerAdapter } from './adapter/LedgerAdapter';
 
-export {};
+// Connector base class (used by connector packages)
+export { LedgerConnectorBase } from './connector/LedgerConnectorBase';
+export type { TransportFactory, LedgerConnectorBaseOptions } from './connector/LedgerConnectorBase';
+
+// Device management (used by connectors)
+export { LedgerDeviceManager } from './device/LedgerDeviceManager';
+
+// Signer (used by connectors)
+export { SignerManager } from './signer/SignerManager';
+export { SignerEth } from './signer/SignerEth';
+export { SignerBtc } from './signer/SignerBtc';
+export { SignerSol } from './signer/SignerSol';
+export { SignerTron } from './signer/SignerTron';
+export { deviceActionToPromise } from './signer/deviceActionToPromise';
+
+// Transport registry
+export {
+  registerTransport,
+  unregisterTransport,
+  getTransportProvider,
+  listRegisteredTransports,
+  clearRegistry,
+} from './transport/registry';
+
+// App management
+export { AppManager } from './app/AppManager';
+
+// Types
+export type {
+  IDmk,
+  DmkDiscoveredDevice,
+  DeviceActionState,
+  SignerEvmAddress,
+  SignerEvmSignature,
+  SignerBtcAddress,
+  TransportProvider,
+  TransportProviderInstance,
+  TransportProviderOptions,
+} from './types';
+
+// Errors
+export { isDeviceLockedError, mapLedgerError } from './errors';

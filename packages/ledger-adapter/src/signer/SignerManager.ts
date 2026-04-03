@@ -1,0 +1,56 @@
+import type { IDmk } from '../types';
+import { SignerEth } from './SignerEth';
+
+type SignerEthBuilderFn = (args: {
+  dmk: IDmk;
+  sessionId: string;
+}) => { build(): unknown } | Promise<{ build(): unknown }>;
+
+/**
+ * Manages per-sessionId SignerEth instances.
+ * Creates on demand, caches for reuse, invalidates on session change.
+ */
+export class SignerManager {
+  private readonly _cache = new Map<string, SignerEth>();
+  private readonly _dmk: IDmk;
+  private readonly _builderFn: SignerEthBuilderFn;
+
+  constructor(dmk: IDmk, builderFn?: SignerEthBuilderFn) {
+    this._dmk = dmk;
+    this._builderFn = builderFn ?? SignerManager._defaultBuilder();
+  }
+
+  async getOrCreate(sessionId: string): Promise<SignerEth> {
+    const hadCached = this._cache.has(sessionId);
+    // Always create a fresh signer — DMK signers may maintain internal DeviceAction
+    // state that can prevent subsequent operations if reused.
+    this._cache.delete(sessionId);
+
+    console.log('[DMK] SignerManager.getOrCreate:', { sessionId, hadCached, creating: true });
+    const builder = await this._builderFn({ dmk: this._dmk, sessionId });
+    const sdkSigner = builder.build();
+    console.log('[DMK] SignerManager: new signer built');
+    const signer = new SignerEth(sdkSigner as any);
+    this._cache.set(sessionId, signer);
+    return signer;
+  }
+
+  invalidate(sessionId: string): void {
+    this._cache.delete(sessionId);
+  }
+
+  clearAll(): void {
+    this._cache.clear();
+  }
+
+  private static _defaultBuilder(): SignerEthBuilderFn {
+    let BuilderClass: any = null;
+    return async args => {
+      if (!BuilderClass) {
+        const mod = await import('@ledgerhq/device-signer-kit-ethereum');
+        BuilderClass = mod.SignerEthBuilder;
+      }
+      return new BuilderClass(args);
+    };
+  }
+}

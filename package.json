@@ -6,28 +6,57 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "yarn workspaces run build",
+    "postinstall": "patch-package && node scripts/fix-ledger-packages.js",
+    "build": "yarn --cwd packages/core build && yarn --cwd packages/transport-core build && yarn --cwd packages/trezor-connector build && yarn --cwd packages/ledger-adapter build && yarn --cwd packages/ledger-connector-webhid build && yarn --cwd packages/trezor-adapter build && yarn --cwd packages/trezor-transport-electron build",
     "dev": "yarn workspaces run dev",
-    "test": "yarn workspaces run test",
+    "test": "vitest run --passWithNoTests",
     "lint": "eslint packages --ext .ts,.tsx",
     "lint:fix": "eslint packages --ext .ts,.tsx --fix",
     "format": "prettier --write \"packages/**/*.{ts,tsx,json}\"",
     "clean": "yarn workspaces run clean",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "yarn build && changeset publish"
+    "changeset:publish": "yarn build && changeset publish",
+    "app:web": "yarn --cwd examples/web dev",
+    "app:mobile": "yarn --cwd examples/mobile start",
+    "app:android": "yarn --cwd examples/mobile expo run:android",
+    "app:android:device": "yarn --cwd examples/mobile expo run:android --device",
+    "app:ios": "yarn --cwd examples/mobile expo run:ios",
+    "app:ios:device": "yarn --cwd examples/mobile expo run:ios --device",
+    "app:desktop": "yarn --cwd examples/desktop dev",
+    "app:ext": "yarn --cwd examples/ext dev",
+    "app:ext:build": "yarn --cwd examples/ext build",
+    "debug:watcher": "node ./scripts/monitor.js"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
+    "@ledgerhq/device-signer-kit-solana": "^1.7.1",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "crypto-browserify": "^3.12.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.0",
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "patch-package": "^8.0.0",
+    "path-browserify": "^1.0.1",
     "prettier": "^3.2.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "ts-loader": "^9.5.4",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vite-plugin-node-polyfills": "^0.25.0",
+    "vitest": "^4.0.18",
+    "webpack": "^5.105.4",
+    "webpack-cli": "^7.0.1"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@1.22.22",
+  "dependencies": {
+    "@ledgerhq/device-signer-kit-bitcoin": "^1.3.0"
+  }
 }

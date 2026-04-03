@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": ".",
+    "paths": {
+      "@bytezhang/hardware-wallet-core": ["../../packages/core/src"],
+      "@bytezhang/trezor-adapter": ["../../packages/trezor-adapter/src"],
+      "@bytezhang/ledger-adapter": ["../../packages/ledger-adapter/src"],
+      "@bytezhang/trezor-transport-web": ["../../packages/trezor-transport-web/src"],
+      "@bytezhang/ledger-transport-web": ["../../packages/ledger-transport-web/src"],
+      "@examples/shared": ["../shared/src"]
+    }
+  },
+  "include": ["main/**/*", "preload/**/*", "renderer/**/*"]
+}
