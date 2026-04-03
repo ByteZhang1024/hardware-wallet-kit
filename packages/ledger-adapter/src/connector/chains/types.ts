@@ -15,6 +15,11 @@ export interface ConnectorContext {
   getDeviceManager(): Promise<LedgerDeviceManager>;
   getSignerManager(): Promise<SignerManager>;
   clearAllSigners(): void;
+  /**
+   * Notify the connector that a session has been replaced (e.g. after app switch).
+   * Updates internal session tracking so subsequent calls use the new session.
+   */
+  replaceSession(oldSessionId: string, newSessionId: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic import returns any
   importLedgerKit: (pkg: string) => Promise<any>;
 }

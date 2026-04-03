@@ -204,11 +204,8 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
 
   if (!dashboardSessionId) {
     console.error(TAG, 'FAILED: could not reconnect to dashboard');
-    ctx.emit('ui-event', {
-      type: EConnectorInteraction.InteractionComplete,
-      payload: { sessionId },
-    });
-    return sessionId;
+    ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
+    throw new Error('TRON app switch failed: could not reconnect to dashboard after closing current app');
   }
 
   // Step 3: Open Tron app via DMK command channel
@@ -238,6 +235,8 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
     if (descriptors.length > 0) {
       const tronSessionId = await dm.connect(descriptors[0].path);
       console.log(TAG, 'Tron session:', tronSessionId);
+      // Notify connector that session was replaced so adapter can self-heal
+      ctx.replaceSession(sessionId, tronSessionId);
       ctx.emit('ui-event', {
         type: EConnectorInteraction.InteractionComplete,
         payload: { sessionId: tronSessionId },
@@ -250,7 +249,7 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
 
   console.error(TAG, 'FAILED: could not connect to Tron app');
   ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
-  return sessionId;
+  throw new Error('TRON app switch failed: could not reconnect after opening Tron app');
 }
 
 /**

@@ -869,6 +869,9 @@ export class LedgerAdapter implements IHardwareWallet {
   private deviceConnectHandler = (data: { device: ConnectorDevice }): void => {
     const deviceInfo = this.connectorDeviceToDeviceInfo(data.device);
     this._discoveredDevices.set(deviceInfo.connectId, deviceInfo);
+    // Clear any stale session for this connectId so ensureConnected() does a fresh connect.
+    // This handles the case where the connector reconnected internally (e.g. TRON app switch).
+    this._sessions.delete(deviceInfo.connectId);
     this.emitter.emit(DEVICE.CONNECT, {
       type: DEVICE.CONNECT,
       payload: deviceInfo,

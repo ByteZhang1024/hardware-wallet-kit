@@ -198,6 +198,7 @@ export class LedgerConnectorBase implements IConnector {
       getDeviceManager: () => this._getDeviceManager(),
       getSignerManager: () => this._getSignerManager(),
       clearAllSigners: () => this._signerManager?.clearAll(),
+      replaceSession: (oldSid, newSid) => this._replaceSession(oldSid, newSid),
       importLedgerKit: this._importLedgerKit,
     };
   }
@@ -492,6 +493,36 @@ export class LedgerConnectorBase implements IConnector {
 
   private _invalidateSession(sessionId: string): void {
     this._signerManager?.invalidate(sessionId);
+  }
+
+  /**
+   * Replace an old session with a new one after app switch.
+   * Updates the connectId→path mapping so subsequent calls() use the new session,
+   * and emits device-connect so the adapter updates its _sessions Map.
+   */
+  private _replaceSession(oldSessionId: string, _newSessionId: string): void {
+    // Find the connectId that was mapped to the old session's device path
+    const dm = this._deviceManager;
+    if (!dm) return;
+
+    const oldDeviceId = dm.getDeviceId(oldSessionId);
+    const connectId = oldDeviceId
+      ? this._pathToConnectId.get(oldDeviceId)
+      : undefined;
+
+    // Invalidate old signer cache
+    this._signerManager?.invalidate(oldSessionId);
+
+    // Emit device-connect so the adapter picks up the new session
+    if (connectId) {
+      this._emit('device-connect', {
+        device: {
+          connectId,
+          deviceId: connectId,
+          name: 'Ledger',
+        },
+      });
+    }
   }
 
   /**
