@@ -16,15 +16,6 @@ export { SignerSol } from './signer/SignerSol';
 export { SignerTron } from './signer/SignerTron';
 export { deviceActionToPromise } from './signer/deviceActionToPromise';
 
-// Transport registry
-export {
-  registerTransport,
-  unregisterTransport,
-  getTransportProvider,
-  listRegisteredTransports,
-  clearRegistry,
-} from './transport/registry';
-
 // App management
 export { AppManager } from './app/AppManager';
 
@@ -36,9 +27,6 @@ export type {
   SignerEvmAddress,
   SignerEvmSignature,
   SignerBtcAddress,
-  TransportProvider,
-  TransportProviderInstance,
-  TransportProviderOptions,
 } from './types';
 
 // Errors

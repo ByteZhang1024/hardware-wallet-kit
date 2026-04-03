@@ -1,12 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/entries/node.ts',
-    'src/entries/react-native.ts',
-    'src/entries/web.ts',
-  ],
+  entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
