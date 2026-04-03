@@ -1,6 +1,6 @@
 {
   "name": "@bytezhang/hardware-ledger-connector-ble",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "description": "IConnector implementation for Ledger hardware wallets via React Native BLE",
   "author": "OneKey",
   "license": "MIT",
@@ -46,8 +46,8 @@
     "connector"
   ],
   "dependencies": {
-    "@bytezhang/hardware-wallet-core": "0.0.35",
-    "@bytezhang/ledger-adapter": "0.0.35",
+    "@bytezhang/hardware-wallet-core": "0.0.36",
+    "@bytezhang/ledger-adapter": "0.0.36",
     "@ledgerhq/device-management-kit": "^1.1.0",
     "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "@ledgerhq/device-signer-kit-bitcoin": "^1.0.0",
