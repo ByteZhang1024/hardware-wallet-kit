@@ -3,11 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@onekeyfe/ledger-adapter": ["packages/ledger-adapter/src"],
-      "@onekeyfe/trezor-adapter": ["packages/trezor-adapter/src"]
+      "@bytezhang/hardware-wallet-core": ["packages/core/src"],
+      "@bytezhang/ledger-adapter": ["packages/ledger-adapter/src"],
+      "@bytezhang/trezor-adapter": ["packages/trezor-adapter/src"]
     }
   },
   "references": [
+    { "path": "./packages/core" },
     { "path": "./packages/ledger-adapter" },
     { "path": "./packages/trezor-adapter" }
   ]

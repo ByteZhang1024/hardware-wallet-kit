@@ -1,6 +1,6 @@
 {
-  "name": "@originalix/ledger-adapter",
-  "version": "0.0.1",
+  "name": "@bytezhang/ledger-adapter",
+  "version": "0.0.30",
   "description": "Ledger hardware wallet adapter for OneKey",
   "author": "OneKey",
   "license": "MIT",
@@ -17,6 +17,18 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./web": {
+      "import": "./dist/entries/web.mjs",
+      "require": "./dist/entries/web.js"
+    },
+    "./react-native": {
+      "import": "./dist/entries/react-native.mjs",
+      "require": "./dist/entries/react-native.js"
+    },
+    "./node": {
+      "import": "./dist/entries/node.mjs",
+      "require": "./dist/entries/node.js"
     }
   },
   "files": [
@@ -26,8 +38,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rimraf dist",
-    "lint": "eslint src --ext .ts",
-    "test": "echo \"No tests yet\""
+    "test": "vitest run"
   },
   "publishConfig": {
     "access": "public"
@@ -44,15 +55,15 @@
     "crypto"
   ],
   "dependencies": {
+    "@bytezhang/hardware-wallet-core": "0.0.30",
+    "@ledgerhq/context-module": "^1.0.0",
+    "@ledgerhq/device-management-kit": "^1.1.0",
+    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
+    "@ledgerhq/device-signer-kit-bitcoin": "^1.0.0",
+    "@ledgerhq/device-signer-kit-solana": "^1.7.0",
     "rxjs": "^7.8.1"
   },
-  "peerDependencies": {
-    "@ledgerhq/device-management-kit": "^1.0.0",
-    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0"
-  },
   "devDependencies": {
-    "@ledgerhq/device-management-kit": "^1.0.0",
-    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "rimraf": "^5.0.0"
   }
 }

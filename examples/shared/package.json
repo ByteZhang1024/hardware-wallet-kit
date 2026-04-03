@@ -1,0 +1,16 @@
+{
+  "name": "@examples/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "echo 'Source-only package — no build needed'"
+  },
+  "dependencies": {
+    "@bytezhang/hardware-wallet-core": "0.0.1",
+    "react": "^18.3.0"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}

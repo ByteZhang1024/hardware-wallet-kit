@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "hardware-wallet-kit-demo",
+    "slug": "hardware-wallet-kit-demo",
+    "version": "1.0.0",
+    "scheme": "hwk-demo",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.anonymous.hardwarewalletkitdemo"
+    },
+    "ios": {
+      "bundleIdentifier": "com.anonymous.hardwarewalletkitdemo"
+    }
+  }
+}
