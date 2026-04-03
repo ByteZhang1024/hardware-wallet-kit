@@ -148,32 +148,49 @@ function _isTronWrongAppError(err: unknown): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Send openApp APDU to switch to TRON App, wait for it to start,
+ * Close the current app, open the TRON App via raw APDUs, wait for it to start,
  * then reconnect to get a fresh session (old session is invalid after app switch).
  * Returns the new sessionId.
+ *
+ * Uses raw APDUs instead of DMK sendCommand because the session becomes invalid
+ * after app switch, and sendCommand's session management can't handle that.
+ *
+ * BOLOS commands:
+ *   close-app: CLA=0xE0, INS=0xD7, P1=0x00, P2=0x00, Lc=0x00
+ *   open-app:  CLA=0xE0, INS=0xD8, P1=0x00, P2=0x00, Lc=N, DATA=appName
  */
 async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<string> {
   const dmk = await ctx.getOrCreateDmk();
-  const appName = new TextEncoder().encode('Tron');
-  const apdu = new Uint8Array(5 + appName.length);
-  apdu[0] = 0xe0;
-  apdu[1] = 0xd8;
-  apdu[2] = 0x00;
-  apdu[3] = 0x00;
-  apdu[4] = appName.length;
-  apdu.set(appName, 5);
 
   ctx.emit('ui-event', { type: EConnectorInteraction.ConfirmOpenApp, payload: { sessionId } });
+
+  // Step 1: Close the current app to return to the BOLOS dashboard.
+  // Without this, the openApp APDU gets intercepted by the current app (0x6e00).
   try {
-    await dmk.sendApdu({ sessionId, apdu });
+    const closeApdu = new Uint8Array([0xe0, 0xd7, 0x00, 0x00, 0x00]);
+    await dmk.sendApdu({ sessionId, apdu: closeApdu });
   } catch {
-    // openApp triggers disconnect -- expected
+    // close-app may trigger disconnect — expected
   }
-  // Wait for app to start
+  await new Promise(r => setTimeout(r, 1000));
+
+  // Step 2: Open the TRON app from the dashboard.
+  try {
+    const appName = new TextEncoder().encode('Tron');
+    const openApdu = new Uint8Array(5 + appName.length);
+    openApdu[0] = 0xe0;
+    openApdu[1] = 0xd8;
+    openApdu[2] = 0x00;
+    openApdu[3] = 0x00;
+    openApdu[4] = appName.length;
+    openApdu.set(appName, 5);
+    await dmk.sendApdu({ sessionId, apdu: openApdu });
+  } catch {
+    // openApp may trigger disconnect — expected
+  }
   await new Promise(r => setTimeout(r, 2000));
 
-  // Reconnect: old session is invalid after app switch.
-  // Reset signers (not DMK) and open a fresh session.
+  // Step 3: Reconnect — old session is invalid after app switch.
   ctx.clearAllSigners();
   try {
     const dm = await ctx.getDeviceManager();
@@ -187,10 +204,10 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
       return newSessionId;
     }
   } catch {
-    // enumerate/connect may fail -- fall through
+    // enumerate/connect may fail — fall through
   }
   ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
-  return sessionId; // fallback: return old session (retry will likely fail)
+  return sessionId;
 }
 
 /**
