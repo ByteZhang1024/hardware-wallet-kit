@@ -4,6 +4,7 @@ import type {
   IConnector,
   ConnectorDevice,
   DeviceInfo,
+  HardwareEvent,
   HardwareEventMap,
   DeviceEventListener,
   TransportType,
@@ -457,7 +458,7 @@ export class LedgerAdapter implements IHardwareWallet {
     listener: (event: HardwareEventMap[K]) => void
   ): void;
   on(event: string, listener: DeviceEventListener): void;
-  on(event: string, listener: (event: any) => void): void {
+  on(event: string, listener: (event: HardwareEvent) => void): void {
     this.emitter.on(event, listener);
   }
 
@@ -466,7 +467,7 @@ export class LedgerAdapter implements IHardwareWallet {
     listener: (event: HardwareEventMap[K]) => void
   ): void;
   off(event: string, listener: DeviceEventListener): void;
-  off(event: string, listener: (event: any) => void): void {
+  off(event: string, listener: (event: HardwareEvent) => void): void {
     this.emitter.off(event, listener);
   }
 
