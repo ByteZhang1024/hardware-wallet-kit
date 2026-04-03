@@ -1,3 +1,4 @@
+import type { ConnectorEventType, ConnectorEventMap } from '@bytezhang/hardware-wallet-core';
 import type { IDmk } from '../../types';
 import type { SignerManager } from '../../signer/SignerManager';
 import type { LedgerDeviceManager } from '../../device/LedgerDeviceManager';
@@ -7,12 +8,13 @@ import type { LedgerDeviceManager } from '../../device/LedgerDeviceManager';
  * Exposes only what chain methods need — no access to raw connector internals.
  */
 export interface ConnectorContext {
-  emit(event: string, data: unknown): void;
+  emit<K extends ConnectorEventType>(event: K, data: ConnectorEventMap[K]): void;
   invalidateSession(sessionId: string): void;
   wrapError(err: unknown): Error;
   getOrCreateDmk(): Promise<IDmk>;
   getDeviceManager(): Promise<LedgerDeviceManager>;
   getSignerManager(): Promise<SignerManager>;
   clearAllSigners(): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic import returns any
   importLedgerKit: (pkg: string) => Promise<any>;
 }

@@ -1,63 +1,33 @@
-export interface DmkDiscoveredDevice {
-  id: string;
-  deviceModel: { id: string; productName: string; model: string; name: string };
-  transport: string;
-  name?: string;
-  rssi?: number;
-  [key: string]: unknown;
-}
+import type {
+  DeviceManagementKit,
+  DiscoveredDevice,
+  ExecuteDeviceActionReturnType,
+  DeviceActionState as DmkDeviceActionState,
+} from '@ledgerhq/device-management-kit';
 
-export interface IDmk {
-  startDiscovering(args?: { transport?: string }): {
-    subscribe(observer: {
-      next: (device: DmkDiscoveredDevice) => void;
-      error?: (err: unknown) => void;
-    }): { unsubscribe: () => void };
-  };
-  stopDiscovering(): void;
-  listenToAvailableDevices(args?: { transport?: string }): {
-    subscribe(observer: {
-      next: (devices: DmkDiscoveredDevice[]) => void;
-      error?: (err: unknown) => void;
-    }): { unsubscribe: () => void };
-  };
-  connect(params: { device: DmkDiscoveredDevice }): Promise<string>;
-  disconnect(params: { sessionId: string }): Promise<void>;
-  sendCommand(params: { sessionId: string; command: unknown }): Promise<unknown>;
-  /**
-   * Send a raw APDU to a connected device.
-   * Used for chains without a dedicated DMK signer kit (e.g. TRON).
-   */
-  sendApdu(params: { sessionId: string; apdu: Uint8Array }): Promise<{
-    statusCode: Uint8Array;
-    data: Uint8Array;
-  }>;
-  close?(): void;
-}
+/**
+ * Re-export DMK types under local aliases for backward compatibility.
+ * These replace the previous duck-typed interfaces with the real SDK types.
+ */
+export type IDmk = DeviceManagementKit;
+export type DmkDiscoveredDevice = DiscoveredDevice;
 
 /**
  * DMK DeviceAction — the Observable-based return type of all DMK signer methods.
- * Used to type SDK signer interfaces without importing DMK packages.
+ *
+ * This is a permissive alias for `ExecuteDeviceActionReturnType` that accepts
+ * any Error and IntermediateValue generics. Signer wrapper code only cares about
+ * the Output type and the observable/cancel shape.
  */
-export interface DeviceAction<T> {
-  observable: {
-    subscribe(observer: {
-      next: (value: DeviceActionState<T>) => void;
-      error?: (err: unknown) => void;
-      complete?: () => void;
-    }): { unsubscribe: () => void };
-  };
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type DeviceAction<T> = ExecuteDeviceActionReturnType<T, any, any>;
 
-export interface DeviceActionState<T> {
-  status: 'pending' | 'completed' | 'error';
-  output?: T;
-  error?: unknown;
-  intermediateValue?: {
-    requiredUserInteraction?: string;
-    [key: string]: unknown;
-  };
-}
+/**
+ * DMK DeviceActionState — re-exported with permissive Error/IntermediateValue.
+ * The real type is a discriminated union on `status`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type DeviceActionState<T> = DmkDeviceActionState<T, any, any>;
 
 export interface SignerEvmAddress {
   address: string;

@@ -1,6 +1,6 @@
+import type { SignerEth as ISdkSignerEth } from '@ledgerhq/device-signer-kit-ethereum';
 import type { IDmk } from '../types';
 import { SignerEth } from './SignerEth';
-import type { ISdkSignerEth } from './SignerEth';
 
 type SignerEthBuilderFn = (args: {
   dmk: IDmk;
@@ -45,14 +45,13 @@ export class SignerManager {
   }
 
   private static _defaultBuilder(): SignerEthBuilderFn {
-    type BuilderCtor = new (args: { dmk: unknown; sessionId: string }) => {
-      build(): ISdkSignerEth;
-    };
-    let BuilderClass: BuilderCtor | null = null;
+    let BuilderClass:
+      | typeof import('@ledgerhq/device-signer-kit-ethereum').SignerEthBuilder
+      | null = null;
     return async args => {
       if (!BuilderClass) {
         const mod = await import('@ledgerhq/device-signer-kit-ethereum');
-        BuilderClass = mod.SignerEthBuilder as unknown as BuilderCtor;
+        BuilderClass = mod.SignerEthBuilder;
       }
       return new BuilderClass(args);
     };

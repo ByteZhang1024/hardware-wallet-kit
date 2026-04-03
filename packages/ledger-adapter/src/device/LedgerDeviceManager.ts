@@ -29,11 +29,10 @@ export class LedgerDeviceManager {
     );
     return new Promise<DeviceDescriptor[]>(resolve => {
       let resolved = false;
-      let syncResult: { id: string; deviceModel: { id: string }; [k: string]: unknown }[] | null =
-        null;
+      let syncResult: DmkDiscoveredDevice[] | null = null;
       let sub: { unsubscribe: () => void } | null = null;
 
-      sub = this._dmk.listenToAvailableDevices().subscribe({
+      sub = this._dmk.listenToAvailableDevices({}).subscribe({
         next: devices => {
           if (resolved) return;
           resolved = true;
@@ -62,7 +61,7 @@ export class LedgerDeviceManager {
             resolve(
               devices.map(d => ({
                 path: d.id,
-                type: d.deviceModel.id,
+                type: d.deviceModel.model,
                 name: d.name,
                 transport: d.transport,
               }))
@@ -83,16 +82,11 @@ export class LedgerDeviceManager {
       // If BehaviorSubject fired synchronously, sub is now assigned
       if (syncResult !== null) {
         sub.unsubscribe();
-        const devices = syncResult as {
-          id: string;
-          deviceModel: { id: string };
-          name?: string;
-          transport?: string;
-        }[];
+        const devices = syncResult as DmkDiscoveredDevice[];
         resolve(
           devices.map(d => ({
             path: d.id,
-            type: d.deviceModel.id,
+            type: d.deviceModel.model,
             name: d.name,
             transport: d.transport,
           }))
@@ -108,7 +102,7 @@ export class LedgerDeviceManager {
     this.stopListening();
     let previousIds = new Set<string>();
 
-    this._listenSub = this._dmk.listenToAvailableDevices().subscribe({
+    this._listenSub = this._dmk.listenToAvailableDevices({}).subscribe({
       next: devices => {
         const currentIds = new Set(devices.map(d => d.id));
 
@@ -127,7 +121,7 @@ export class LedgerDeviceManager {
               type: 'device-connected',
               descriptor: {
                 path: d.id,
-                type: d.deviceModel.id,
+                type: d.deviceModel.model,
                 name: d.name,
                 transport: d.transport,
               },
@@ -167,7 +161,7 @@ export class LedgerDeviceManager {
       return Promise.resolve();
     }
     console.log('[DMK] requestDevice() starting persistent BLE scan');
-    this._discoverySub = this._dmk.startDiscovering().subscribe({
+    this._discoverySub = this._dmk.startDiscovering({}).subscribe({
       next: d => {
         console.log('[DMK] BLE discovered:', d.name || d.id);
         this._discovered.set(d.id, d);
@@ -227,6 +221,6 @@ export class LedgerDeviceManager {
     this._discovered.clear();
     this._sessions.clear();
     this._sessionToDevice.clear();
-    this._dmk.close?.();
+    this._dmk.close();
   }
 }

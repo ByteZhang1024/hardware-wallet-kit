@@ -1,7 +1,6 @@
 import { hexToBytes, bytesToHex } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerSol } from '../../signer/SignerSol';
-import type { ISdkSignerSol } from '../../signer/SignerSol';
 import type { ConnectorContext } from './types';
 
 // ---------------------------------------------------------------------------
@@ -93,11 +92,8 @@ export async function solSignMessage(
 async function _createSolSigner(ctx: ConnectorContext, sessionId: string): Promise<SignerSol> {
   const dmk = await ctx.getOrCreateDmk();
   const { SignerSolanaBuilder } = await ctx.importLedgerKit('@ledgerhq/device-signer-kit-solana');
-  const sdkSigner = new SignerSolanaBuilder({
-    dmk: dmk as unknown, // IDmk duck-types the real DMK interface
-    sessionId,
-  }).build();
-  const signer = new SignerSol(sdkSigner as unknown as ISdkSignerSol);
+  const sdkSigner = new SignerSolanaBuilder({ dmk, sessionId }).build();
+  const signer = new SignerSol(sdkSigner);
 
   // Wire up interaction events (verify-address, sign, etc.)
   signer.onInteraction = (interaction: string) => {

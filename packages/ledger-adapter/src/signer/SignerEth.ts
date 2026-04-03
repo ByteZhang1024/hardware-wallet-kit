@@ -1,26 +1,6 @@
-import type { DeviceAction, SignerEvmAddress, SignerEvmSignature } from '../types';
+import type { SignerEth as ISdkSignerEth, TypedData } from '@ledgerhq/device-signer-kit-ethereum';
+import type { SignerEvmAddress, SignerEvmSignature } from '../types';
 import { deviceActionToPromise } from './deviceActionToPromise';
-
-/**
- * SDK signer interface — duck-typed to avoid hard dependency on
- * @ledgerhq/device-signer-kit-ethereum.
- */
-export interface ISdkSignerEth {
-  getAddress(
-    derivationPath: string,
-    options?: { checkOnDevice?: boolean }
-  ): DeviceAction<SignerEvmAddress>;
-  signTransaction(
-    derivationPath: string,
-    transaction: Uint8Array,
-    options?: unknown
-  ): DeviceAction<SignerEvmSignature>;
-  signMessage(
-    derivationPath: string,
-    message: string | Uint8Array
-  ): DeviceAction<SignerEvmSignature>;
-  signTypedData(derivationPath: string, data: unknown): DeviceAction<SignerEvmSignature>;
-}
 
 /** Convert hex string (with or without 0x) to Uint8Array. */
 function hexToBytes(hex: string): Uint8Array {
@@ -82,7 +62,7 @@ export class SignerEth {
     );
   }
 
-  async signTypedData(derivationPath: string, data: unknown): Promise<SignerEvmSignature> {
+  async signTypedData(derivationPath: string, data: TypedData): Promise<SignerEvmSignature> {
     const action = this._sdk.signTypedData(derivationPath, data);
     return deviceActionToPromise<SignerEvmSignature>(
       action,

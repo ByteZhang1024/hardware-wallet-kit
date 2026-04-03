@@ -190,11 +190,8 @@ export class LedgerConnectorBase implements IConnector {
 
     // Build the context that chain handlers use
     this._ctx = {
-      emit: (event, data) =>
-        this._emit(
-          event as ConnectorEventType,
-          data as unknown as ConnectorEventMap[ConnectorEventType]
-        ),
+      emit: <K extends ConnectorEventType>(event: K, data: ConnectorEventMap[K]) =>
+        this._emit(event, data),
       invalidateSession: sid => this._invalidateSession(sid),
       wrapError: err => this._wrapError(err),
       getOrCreateDmk: () => this._getOrCreateDmk(),
@@ -450,24 +447,18 @@ export class LedgerConnectorBase implements IConnector {
       '[DMK] _getOrCreateDmk: transportFactory type:',
       typeof transportFactory,
       'value:',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- debug introspection of dynamic factory
-      (transportFactory as Record<string, unknown>)?.name ||
-        String(transportFactory).substring(0, 80)
+      String(transportFactory).substring(0, 80)
     );
 
-    this._dmk = new DeviceManagementKitBuilder()
-      .addTransport(transportFactory as unknown)
-      .build() as unknown as IDmk;
+    const dmk: IDmk = new DeviceManagementKitBuilder().addTransport(transportFactory).build();
+    this._dmk = dmk;
 
     console.log(
       '[DMK] _getOrCreateDmk: DMK created, methods:',
-      Object.keys(this._dmk)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- debug introspection of DMK methods
-        .filter(k => typeof (this._dmk as unknown as Record<string, unknown>)[k] === 'function')
-        .join(', ')
+      Object.getOwnPropertyNames(Object.getPrototypeOf(dmk)).join(', ')
     );
 
-    return this._dmk;
+    return dmk;
   }
 
   private _initManagers(dmk: IDmk): void {

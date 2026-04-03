@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { DeviceModelId } from '@ledgerhq/device-management-kit';
 import { LedgerDeviceManager } from '../device/LedgerDeviceManager';
 import type { IDmk, DmkDiscoveredDevice } from '../types';
 
@@ -37,6 +38,7 @@ function createMockDmk(): IDmk & {
     sendApdu: vi
       .fn()
       .mockResolvedValue({ statusCode: new Uint8Array([0x90, 0x00]), data: new Uint8Array() }),
+    close: vi.fn(),
     _emitDevice: (d: DmkDiscoveredDevice) => deviceObserver?.next(d),
     _emitList: (d: DmkDiscoveredDevice[]) => listObserver?.next(d),
   };
@@ -44,12 +46,14 @@ function createMockDmk(): IDmk & {
 
 const DEVICE_1: DmkDiscoveredDevice = {
   id: 'dev-1',
-  deviceModel: { id: 'nanoX', productName: 'Nano X', model: 'nanoX', name: 'Nano X' },
+  name: 'Nano X',
+  deviceModel: { id: 'dev-1', model: DeviceModelId.NANO_X, name: 'Nano X' },
   transport: 'WebHID',
 };
 const DEVICE_2: DmkDiscoveredDevice = {
   id: 'dev-2',
-  deviceModel: { id: 'nanoS', productName: 'Nano S', model: 'nanoS', name: 'Nano S' },
+  name: 'Nano S',
+  deviceModel: { id: 'dev-2', model: DeviceModelId.NANO_S, name: 'Nano S' },
   transport: 'WebHID',
 };
 

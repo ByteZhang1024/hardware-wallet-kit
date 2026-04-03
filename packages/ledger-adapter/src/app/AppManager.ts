@@ -1,3 +1,9 @@
+import {
+  GetAppAndVersionCommand,
+  OpenAppCommand,
+  CloseAppCommand,
+  isSuccessCommandResult,
+} from '@ledgerhq/device-management-kit';
 import type { IDmk } from '../types';
 
 /**
@@ -82,24 +88,27 @@ export class AppManager {
   // ---------------------------------------------------------------------------
 
   private async _getCurrentApp(sessionId: string): Promise<string> {
-    const result = (await this._dmk.sendCommand({
+    const result = await this._dmk.sendCommand({
       sessionId,
-      command: { type: 'get-app-and-version' },
-    })) as { name: string };
-    return result.name;
+      command: new GetAppAndVersionCommand(),
+    });
+    if (isSuccessCommandResult(result)) {
+      return result.data.name;
+    }
+    throw new Error('Failed to get current app from device');
   }
 
   private async _openApp(sessionId: string, appName: string): Promise<void> {
     await this._dmk.sendCommand({
       sessionId,
-      command: { type: 'open-app', appName },
+      command: new OpenAppCommand({ appName }),
     });
   }
 
   private async _closeCurrentApp(sessionId: string): Promise<void> {
     await this._dmk.sendCommand({
       sessionId,
-      command: { type: 'close-app' },
+      command: new CloseAppCommand(),
     });
   }
 

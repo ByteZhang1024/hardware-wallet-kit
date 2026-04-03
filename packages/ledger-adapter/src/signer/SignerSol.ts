@@ -1,23 +1,9 @@
-import type { DeviceAction } from '../types';
+import type { SignerSolana as ISdkSignerSol } from '@ledgerhq/device-signer-kit-solana';
 import { deviceActionToPromise } from './deviceActionToPromise';
 
-/**
- * SDK SOL signer interface — duck-typed to avoid hard dependency on
- * @ledgerhq/device-signer-kit-solana.
- */
-export interface ISdkSignerSol {
-  getAddress(derivationPath: string, options?: { checkOnDevice?: boolean }): DeviceAction<string>;
-  signTransaction(
-    derivationPath: string,
-    transaction: Uint8Array,
-    options?: unknown
-  ): DeviceAction<Uint8Array>;
-  signMessage(
-    derivationPath: string,
-    message: string | Uint8Array,
-    options?: unknown
-  ): DeviceAction<{ signature: string }>;
-}
+// Extract parameter types from the real SignerSolana interface to avoid deep path imports.
+type SolTxOptions = Parameters<ISdkSignerSol['signTransaction']>[2];
+type SolMsgOptions = Parameters<ISdkSignerSol['signMessage']>[2];
 
 /**
  * Wraps Ledger's Solana SDK signer (Observable-based DeviceActions) into
@@ -47,7 +33,7 @@ export class SignerSol {
   async signTransaction(
     derivationPath: string,
     transaction: Uint8Array,
-    options?: unknown
+    options?: SolTxOptions
   ): Promise<Uint8Array> {
     const action = this._sdk.signTransaction(derivationPath, transaction, options);
     return deviceActionToPromise<Uint8Array>(action, this.onInteraction);
@@ -60,7 +46,7 @@ export class SignerSol {
   async signMessage(
     derivationPath: string,
     message: string | Uint8Array,
-    options?: unknown
+    options?: SolMsgOptions
   ): Promise<{ signature: string }> {
     const action = this._sdk.signMessage(derivationPath, message, options);
     return deviceActionToPromise<{ signature: string }>(action, this.onInteraction);

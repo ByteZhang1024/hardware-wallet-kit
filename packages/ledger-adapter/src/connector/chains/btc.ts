@@ -6,7 +6,6 @@ import {
 } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerBtc } from '../../signer/SignerBtc';
-import type { ISdkSignerBtc } from '../../signer/SignerBtc';
 import type { ConnectorContext } from './types';
 
 // ---------------------------------------------------------------------------
@@ -256,11 +255,8 @@ export async function btcGetMasterFingerprint(
 async function _createBtcSigner(ctx: ConnectorContext, sessionId: string): Promise<SignerBtc> {
   const dmk = await ctx.getOrCreateDmk();
   const { SignerBtcBuilder } = await ctx.importLedgerKit('@ledgerhq/device-signer-kit-bitcoin');
-  const sdkSigner = new SignerBtcBuilder({
-    dmk: dmk as unknown, // IDmk duck-types the real DMK interface
-    sessionId,
-  }).build();
-  const signer = new SignerBtc(sdkSigner as unknown as ISdkSignerBtc);
+  const sdkSigner = new SignerBtcBuilder({ dmk, sessionId }).build();
+  const signer = new SignerBtc(sdkSigner);
 
   // Wire up interaction events (open-app, unlock, sign, etc.)
   signer.onInteraction = (interaction: string) => {

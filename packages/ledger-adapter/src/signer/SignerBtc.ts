@@ -1,4 +1,11 @@
-import type { DeviceAction, SignerBtcAddress } from '../types';
+import type { SignerBtc as ISdkSignerBtc } from '@ledgerhq/device-signer-kit-bitcoin';
+
+// Extract parameter types from the real SignerBtc interface to avoid deep path imports.
+type BtcWallet = Parameters<ISdkSignerBtc['getWalletAddress']>[0];
+type BtcPsbt = Parameters<ISdkSignerBtc['signPsbt']>[1];
+type BtcPsbtOptions = Parameters<ISdkSignerBtc['signPsbt']>[2];
+type BtcMessageOptions = Parameters<ISdkSignerBtc['signMessage']>[2];
+import type { SignerBtcAddress } from '../types';
 import { deviceActionToPromise } from './deviceActionToPromise';
 
 /** Decode hex string (with or without 0x prefix) to UTF-8 text. */
@@ -9,32 +16,6 @@ function hexToUtf8(hex: string): string {
     bytes[i] = parseInt(h.substring(i * 2, i * 2 + 2), 16);
   }
   return new TextDecoder().decode(bytes);
-}
-
-/**
- * SDK BTC signer interface — duck-typed to avoid hard dependency on
- * @ledgerhq/device-signer-kit-bitcoin.
- */
-export interface ISdkSignerBtc {
-  getExtendedPublicKey(
-    derivationPath: string,
-    options?: { checkOnDevice?: boolean }
-  ): DeviceAction<string | { extendedPublicKey: string }>;
-  getWalletAddress(
-    wallet: unknown,
-    addressIndex: number,
-    options?: { checkOnDevice?: boolean; change?: boolean }
-  ): DeviceAction<SignerBtcAddress>;
-  getMasterFingerprint(options?: {
-    skipOpenApp?: boolean;
-  }): DeviceAction<{ masterFingerprint: Uint8Array }>;
-  signPsbt(wallet: unknown, psbt: unknown, options?: unknown): DeviceAction<unknown[]>;
-  signTransaction(wallet: unknown, psbt: unknown, options?: unknown): DeviceAction<string>;
-  signMessage(
-    derivationPath: string,
-    message: string,
-    options?: unknown
-  ): DeviceAction<{ r: string; s: string; v: number }>;
 }
 
 /** Timeout for user-interactive operations (sign, verify). */
@@ -50,7 +31,7 @@ export class SignerBtc {
   constructor(private readonly _sdk: ISdkSignerBtc) {}
 
   async getWalletAddress(
-    wallet: unknown,
+    wallet: BtcWallet,
     addressIndex: number,
     options?: { checkOnDevice?: boolean; change?: boolean }
   ): Promise<SignerBtcAddress> {
@@ -110,7 +91,7 @@ export class SignerBtc {
    * The `wallet` param is a DefaultWallet or WalletPolicy instance.
    * The `psbt` param can be a hex string, base64 string, or Uint8Array.
    */
-  async signPsbt(wallet: unknown, psbt: unknown, options?: unknown): Promise<unknown[]> {
+  async signPsbt(wallet: BtcWallet, psbt: BtcPsbt, options?: BtcPsbtOptions): Promise<unknown[]> {
     const action = this._sdk.signPsbt(wallet, psbt, options);
     return deviceActionToPromise<unknown[]>(action, this.onInteraction, INTERACTIVE_TIMEOUT_MS);
   }
@@ -119,7 +100,11 @@ export class SignerBtc {
    * Sign a PSBT and return the fully extracted raw transaction as a hex string.
    * Like signPsbt, but also finalises the PSBT and extracts the transaction.
    */
-  async signTransaction(wallet: unknown, psbt: unknown, options?: unknown): Promise<string> {
+  async signTransaction(
+    wallet: BtcWallet,
+    psbt: BtcPsbt,
+    options?: BtcPsbtOptions
+  ): Promise<string> {
     const action = this._sdk.signTransaction(wallet, psbt, options);
     return deviceActionToPromise<string>(action, this.onInteraction, INTERACTIVE_TIMEOUT_MS);
   }
@@ -131,10 +116,10 @@ export class SignerBtc {
   async signMessage(
     derivationPath: string,
     message: string,
-    options?: unknown
+    options?: BtcMessageOptions
   ): Promise<{ r: string; s: string; v: number }> {
     // DMK uses TextEncoder to convert message string to bytes.
-    // We receive hex-encoded message, so decode hex → UTF-8 text first.
+    // We receive hex-encoded message, so decode hex -> UTF-8 text first.
     const action = this._sdk.signMessage(derivationPath, hexToUtf8(message), options);
     return deviceActionToPromise<{ r: string; s: string; v: number }>(
       action,

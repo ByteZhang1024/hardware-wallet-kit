@@ -1,11 +1,12 @@
-import type { DeviceAction } from '../types';
+import { DeviceActionStatus } from '@ledgerhq/device-management-kit';
+import type { DeviceAction, DeviceActionState } from '../types';
 
 /** Default timeout for non-interactive operations (e.g. getAddress without showOnDevice). */
 const DEFAULT_TIMEOUT_MS = 30_000;
 
 /**
  * Convert a DMK DeviceAction (Observable-based) into a Promise.
- * Handles pending → completed/error state transitions and interaction callbacks.
+ * Handles pending -> completed/error state transitions and interaction callbacks.
  *
  * @param timeoutMs  Timeout in ms. Resets each time the Observable emits (device is alive).
  *                   Pass 0 to disable. Default: 30s.
@@ -39,7 +40,7 @@ export function deviceActionToPromise<T>(
 
     console.log('[DMK-Observable] subscribing to action.observable...');
     sub = action.observable.subscribe({
-      next: state => {
+      next: (state: DeviceActionState<T>) => {
         console.log('[DMK-Observable] next received');
         // Device is alive — reset timeout
         resetTimer();
@@ -48,29 +49,29 @@ export function deviceActionToPromise<T>(
           '[DMK-Observable] state:',
           JSON.stringify({
             status: state.status,
-            interaction: state.intermediateValue?.requiredUserInteraction,
-            intermediateValue: state.intermediateValue,
-            hasOutput: !!state.output,
-            hasError: !!state.error,
+            intermediateValue:
+              state.status === DeviceActionStatus.Pending ? state.intermediateValue : undefined,
+            hasOutput: state.status === DeviceActionStatus.Completed,
+            hasError: state.status === DeviceActionStatus.Error,
           })
         );
         if (settled) return;
-        if (state.status === 'completed') {
+        if (state.status === DeviceActionStatus.Completed) {
           settled = true;
           if (timer) clearTimeout(timer);
           onInteraction?.('interaction-complete');
           sub?.unsubscribe();
-          resolve(state.output as T);
-        } else if (state.status === 'error') {
+          resolve(state.output);
+        } else if (state.status === DeviceActionStatus.Error) {
           settled = true;
           if (timer) clearTimeout(timer);
           onInteraction?.('interaction-complete');
           sub?.unsubscribe();
           reject(state.error);
-        } else if (state.status === 'pending' && onInteraction) {
+        } else if (state.status === DeviceActionStatus.Pending && onInteraction) {
           const interaction = state.intermediateValue?.requiredUserInteraction;
           if (interaction && interaction !== 'none') {
-            onInteraction(interaction);
+            onInteraction(String(interaction));
           }
         }
       },

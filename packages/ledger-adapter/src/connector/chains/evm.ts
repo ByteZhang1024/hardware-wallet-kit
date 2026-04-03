@@ -1,4 +1,5 @@
 import { stripHex, padHex64, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
+import type { TypedData } from '@ledgerhq/device-signer-kit-ethereum';
 import { normalizePath } from './utils';
 import type { SignerEvmSignature } from '../../types';
 import type { ConnectorContext } from './types';
@@ -25,7 +26,7 @@ export interface EvmSignMessageCallParams {
 
 export interface EvmSignTypedDataCallParams {
   path: string;
-  data: unknown;
+  data: TypedData;
   mode?: string;
 }
 

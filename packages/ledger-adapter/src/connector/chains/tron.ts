@@ -1,4 +1,5 @@
 import { EConnectorInteraction, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
+import { CloseAppCommand, OpenAppCommand } from '@ledgerhq/device-management-kit';
 import { normalizePath } from './utils';
 import { SignerTron } from '../../signer/SignerTron';
 import { isWrongAppError } from '../../errors';
@@ -173,7 +174,7 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
   // Step 1: Close current app via DMK command channel (reaches BOLOS OS)
   console.log(TAG, 'Step 1: sendCommand close-app, sessionId:', sessionId);
   try {
-    await dmk.sendCommand({ sessionId, command: { type: 'close-app' } });
+    await dmk.sendCommand({ sessionId, command: new CloseAppCommand() });
     console.log(TAG, 'close-app ok');
   } catch (err) {
     console.log(TAG, 'close-app threw:', (err as Error).message);
@@ -215,7 +216,7 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
   try {
     await dmk.sendCommand({
       sessionId: dashboardSessionId,
-      command: { type: 'open-app', appName: 'Tron' },
+      command: new OpenAppCommand({ appName: 'Tron' }),
     });
     console.log(TAG, 'open-app ok');
   } catch (err) {
