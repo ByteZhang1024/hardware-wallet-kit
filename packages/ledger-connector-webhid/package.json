@@ -1,6 +1,6 @@
 {
   "name": "@bytezhang/hardware-ledger-connector-webhid",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "IConnector implementation for Ledger hardware wallets via WebHID (DMK)",
   "author": "OneKey",
   "license": "MIT",
@@ -44,8 +44,8 @@
     "connector"
   ],
   "dependencies": {
-    "@bytezhang/hardware-wallet-core": "0.0.34",
-    "@bytezhang/ledger-adapter": "0.0.34",
+    "@bytezhang/hardware-wallet-core": "0.0.35",
+    "@bytezhang/ledger-adapter": "0.0.35",
     "@ledgerhq/device-management-kit": "^1.1.0",
     "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "@ledgerhq/device-signer-kit-bitcoin": "^1.0.0",

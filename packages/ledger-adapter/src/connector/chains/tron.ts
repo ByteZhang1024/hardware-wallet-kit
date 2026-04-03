@@ -148,33 +148,72 @@ function _isTronWrongAppError(err: unknown): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Close the current app, open the TRON App via raw APDUs, wait for it to start,
- * then reconnect to get a fresh session (old session is invalid after app switch).
+ * Close the current app, open the TRON App, then reconnect.
  * Returns the new sessionId.
  *
- * Uses raw APDUs instead of DMK sendCommand because the session becomes invalid
- * after app switch, and sendCommand's session management can't handle that.
+ * Key insight: after closeApp, the old session is INVALID. We must disconnect
+ * and reconnect BEFORE sending openApp, otherwise DMK's transport layer still
+ * thinks the old session has an in-flight APDU → AlreadySendingApduError.
  *
- * BOLOS commands:
- *   close-app: CLA=0xE0, INS=0xD7, P1=0x00, P2=0x00, Lc=0x00
- *   open-app:  CLA=0xE0, INS=0xD8, P1=0x00, P2=0x00, Lc=N, DATA=appName
+ * Flow:
+ *   1. closeApp APDU on current session → device returns to dashboard
+ *   2. Disconnect old session (cleans DMK transport state)
+ *   3. Reconnect → fresh session to dashboard
+ *   4. openApp APDU on fresh session → device launches Tron app
+ *   5. Disconnect again (app launch invalidates session)
+ *   6. Reconnect → fresh session to Tron app
  */
 async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<string> {
+  const TAG = '[TRON-AppSwitch]';
   const dmk = await ctx.getOrCreateDmk();
+  const dm = await ctx.getDeviceManager();
 
   ctx.emit('ui-event', { type: EConnectorInteraction.ConfirmOpenApp, payload: { sessionId } });
 
-  // Step 1: Close the current app to return to the BOLOS dashboard.
-  // Without this, the openApp APDU gets intercepted by the current app (0x6e00).
+  // Step 1: Close the current app
+  console.log(TAG, 'Step 1: closing current app, sessionId:', sessionId);
   try {
     const closeApdu = new Uint8Array([0xe0, 0xd7, 0x00, 0x00, 0x00]);
-    await dmk.sendApdu({ sessionId, apdu: closeApdu });
-  } catch {
-    // close-app may trigger disconnect — expected
+    const closeResult = await dmk.sendApdu({ sessionId, apdu: closeApdu });
+    const sw = (closeResult.statusCode[0] << 8) | closeResult.statusCode[1];
+    console.log(TAG, 'closeApp result: 0x' + sw.toString(16));
+  } catch (err) {
+    console.log(TAG, 'closeApp threw (may be expected disconnect):', (err as Error).message);
+  }
+
+  // Step 2: Disconnect old session to clean DMK transport state
+  console.log(TAG, 'Step 2: disconnecting old session');
+  ctx.clearAllSigners();
+  try {
+    await dm.disconnect(sessionId);
+    console.log(TAG, 'disconnect ok');
+  } catch (err) {
+    console.log(TAG, 'disconnect threw:', (err as Error).message);
   }
   await new Promise(r => setTimeout(r, 1000));
 
-  // Step 2: Open the TRON app from the dashboard.
+  // Step 3: Reconnect to dashboard
+  console.log(TAG, 'Step 3: reconnecting to dashboard');
+  let dashboardSessionId: string | undefined;
+  try {
+    const descriptors = await dm.enumerate();
+    console.log(TAG, 'enumerate found', descriptors.length, 'devices');
+    if (descriptors.length > 0) {
+      dashboardSessionId = await dm.connect(descriptors[0].path);
+      console.log(TAG, 'connected to dashboard, sessionId:', dashboardSessionId);
+    }
+  } catch (err) {
+    console.error(TAG, 'reconnect to dashboard failed:', (err as Error).message);
+  }
+
+  if (!dashboardSessionId) {
+    console.error(TAG, 'FAILED: could not reconnect to dashboard');
+    ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
+    return sessionId;
+  }
+
+  // Step 4: Send openApp on the fresh dashboard session
+  console.log(TAG, 'Step 4: sending openApp("Tron") on session:', dashboardSessionId);
   try {
     const appName = new TextEncoder().encode('Tron');
     const openApdu = new Uint8Array(5 + appName.length);
@@ -184,28 +223,44 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
     openApdu[3] = 0x00;
     openApdu[4] = appName.length;
     openApdu.set(appName, 5);
-    await dmk.sendApdu({ sessionId, apdu: openApdu });
-  } catch {
-    // openApp may trigger disconnect — expected
+    const openResult = await dmk.sendApdu({ sessionId: dashboardSessionId, apdu: openApdu });
+    const sw = (openResult.statusCode[0] << 8) | openResult.statusCode[1];
+    console.log(TAG, 'openApp result: 0x' + sw.toString(16));
+    if (sw === 0x6807) {
+      console.error(TAG, 'TRON APP NOT INSTALLED on device');
+    }
+  } catch (err) {
+    console.log(TAG, 'openApp threw (may be expected app launch):', (err as Error).message);
+  }
+
+  // Step 5: Disconnect dashboard session (app launch invalidated it)
+  console.log(TAG, 'Step 5: disconnecting dashboard session');
+  try {
+    await dm.disconnect(dashboardSessionId);
+  } catch (err) {
+    console.log(TAG, 'dashboard disconnect threw:', (err as Error).message);
   }
   await new Promise(r => setTimeout(r, 2000));
 
-  // Step 3: Reconnect — old session is invalid after app switch.
-  ctx.clearAllSigners();
+  // Step 6: Reconnect to the now-running Tron app
+  console.log(TAG, 'Step 6: reconnecting to Tron app');
   try {
-    const dm = await ctx.getDeviceManager();
     const descriptors = await dm.enumerate();
+    console.log(TAG, 'enumerate found', descriptors.length, 'devices');
     if (descriptors.length > 0) {
-      const newSessionId = await dm.connect(descriptors[0].path);
+      const tronSessionId = await dm.connect(descriptors[0].path);
+      console.log(TAG, 'connected to Tron app, sessionId:', tronSessionId);
       ctx.emit('ui-event', {
         type: EConnectorInteraction.InteractionComplete,
-        payload: { sessionId: newSessionId },
+        payload: { sessionId: tronSessionId },
       });
-      return newSessionId;
+      return tronSessionId;
     }
-  } catch {
-    // enumerate/connect may fail — fall through
+  } catch (err) {
+    console.error(TAG, 'reconnect to Tron failed:', (err as Error).message);
   }
+
+  console.error(TAG, 'FAILED: could not connect to Tron app, returning old sessionId');
   ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
   return sessionId;
 }
