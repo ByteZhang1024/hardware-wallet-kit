@@ -1,5 +1,6 @@
 import type { LedgerAdapterContext } from './types';
 import type {
+  Response,
   IEvmMethods,
   EvmGetAddressParams,
   EvmAddress,
@@ -26,7 +27,7 @@ export function createEvmMethods(ctx: LedgerAdapterContext): IEvmMethods {
     connectId: string,
     deviceId: string,
     params: EvmGetAddressParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<EvmAddress>> {
+  ): Promise<Response<EvmAddress>> {
     console.log('[DMK] adapter.evmGetAddress called:', {
       connectId,
       deviceId,
@@ -58,7 +59,7 @@ export function createEvmMethods(ctx: LedgerAdapterContext): IEvmMethods {
     connectId: string,
     deviceId: string,
     params: EvmGetPublicKeyParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<EvmPublicKey>> {
+  ): Promise<Response<EvmPublicKey>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'evm'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -82,7 +83,7 @@ export function createEvmMethods(ctx: LedgerAdapterContext): IEvmMethods {
     connectId: string,
     deviceId: string,
     params: EvmSignTxParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<EvmSignedTx>> {
+  ): Promise<Response<EvmSignedTx>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'evm'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -114,7 +115,7 @@ export function createEvmMethods(ctx: LedgerAdapterContext): IEvmMethods {
     connectId: string,
     deviceId: string,
     params: EvmSignMsgParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<EvmSignature>> {
+  ): Promise<Response<EvmSignature>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'evm'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -137,7 +138,7 @@ export function createEvmMethods(ctx: LedgerAdapterContext): IEvmMethods {
     connectId: string,
     deviceId: string,
     params: EvmSignTypedDataParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<EvmSignature>> {
+  ): Promise<Response<EvmSignature>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'evm'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');

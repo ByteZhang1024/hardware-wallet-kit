@@ -7,8 +7,9 @@
     "build:main": "esbuild main/index.ts --bundle --platform=node --outfile=dist-main/index.js --external:electron --packages=external",
     "build:preload": "node scripts/build-preload.mjs",
     "build:renderer": "vite build",
-    "build": "yarn build:main && yarn build:preload && yarn build:renderer",
-    "dev": "yarn build && electron .",
+    "build": "echo skip",
+    "bundle": "yarn build:main && yarn build:preload && yarn build:renderer",
+    "dev": "yarn bundle && electron .",
     "start": "electron ."
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "@bytezhang/trezor-transport-electron": "0.0.1",
     "@bytezhang/hardware-wallet-core": "0.0.1",
     "@bytezhang/ledger-adapter": "0.0.1",
+    "@bytezhang/hardware-ledger-connector-webhid": "0.0.1",
     "@trezor/connect": "^9.0.0",
     "buffer": "^6.0.3",
     "react": "^18.3.0",

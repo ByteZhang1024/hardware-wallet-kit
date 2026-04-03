@@ -1,7 +1,7 @@
-import { stripHex } from '@bytezhang/hardware-wallet-core';
+import { stripHex, hexToBytes, bytesToHex } from '@bytezhang/hardware-wallet-core';
+import { normalizePath } from './utils';
 import { SignerBtc } from '../../signer/SignerBtc';
 import type { ConnectorContext } from './types';
-import { normalizePath, hexToBytes, bytesToHex } from './utils';
 
 // ---------------------------------------------------------------------------
 // Call param types

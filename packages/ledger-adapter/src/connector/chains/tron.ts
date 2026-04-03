@@ -1,8 +1,8 @@
 import { EConnectorInteraction } from '@bytezhang/hardware-wallet-core';
+import { normalizePath } from './utils';
 import { SignerTron } from '../../signer/SignerTron';
 import { isWrongAppError } from '../../errors';
 import type { ConnectorContext } from './types';
-import { normalizePath } from './utils';
 
 // ---------------------------------------------------------------------------
 // Call param types

@@ -1,7 +1,7 @@
 import { stripHex, padHex64 } from '@bytezhang/hardware-wallet-core';
+import { normalizePath } from './utils';
 import type { SignerEvmSignature } from '../../types';
 import type { ConnectorContext } from './types';
-import { normalizePath } from './utils';
 
 // ---------------------------------------------------------------------------
 // Call param types

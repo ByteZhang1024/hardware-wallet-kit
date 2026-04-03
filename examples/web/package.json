@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "echo skip",
+    "bundle": "vite build"
   },
   "dependencies": {
     "@examples/shared": "0.0.0",

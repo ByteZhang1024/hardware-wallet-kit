@@ -117,6 +117,6 @@ export { createDesktopBridgeConnector, EConnectorInteraction } from './types/con
 
 export { TypedEventEmitter } from './utils/TypedEventEmitter';
 export { compareSemver } from './utils/semver';
-export { ensure0x, stripHex, padHex64 } from './utils/hex';
+export { ensure0x, stripHex, padHex64, hexToBytes, bytesToHex } from './utils/hex';
 export { enrichErrorMessage } from './utils/errorMessages';
 export { batchCall } from './utils/batchCall';

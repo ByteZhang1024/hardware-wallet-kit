@@ -1,6 +1,7 @@
+import { hexToBytes, bytesToHex } from '@bytezhang/hardware-wallet-core';
+import { normalizePath } from './utils';
 import { SignerSol } from '../../signer/SignerSol';
 import type { ConnectorContext } from './types';
-import { normalizePath, hexToBytes, bytesToHex } from './utils';
 
 // ---------------------------------------------------------------------------
 // Call param types

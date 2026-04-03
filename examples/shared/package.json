@@ -4,7 +4,7 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "build": "echo 'Source-only package — no build needed'"
+    "build": "echo skip"
   },
   "dependencies": {
     "@bytezhang/hardware-wallet-core": "0.0.1",

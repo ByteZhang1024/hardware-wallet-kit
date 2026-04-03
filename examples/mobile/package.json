@@ -4,7 +4,7 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "build": "echo 'Expo app — use expo run:ios or expo run:android'",
+    "build": "echo skip",
     "start": "expo start --clear",
     "android": "expo run:android",
     "ios": "expo run:ios"

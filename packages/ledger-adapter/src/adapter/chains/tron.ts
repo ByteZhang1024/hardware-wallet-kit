@@ -1,5 +1,6 @@
 import type { LedgerAdapterContext } from './types';
 import type {
+  Response,
   ITronMethods,
   TronGetAddressParams,
   TronAddress,
@@ -16,7 +17,7 @@ export function createTronMethods(ctx: LedgerAdapterContext): ITronMethods {
     connectId: string,
     deviceId: string,
     params: TronGetAddressParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<TronAddress>> {
+  ): Promise<Response<TronAddress>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     try {
       const result = (await ctx.connectorCall(connectId, 'tronGetAddress', {
@@ -37,7 +38,7 @@ export function createTronMethods(ctx: LedgerAdapterContext): ITronMethods {
     connectId: string,
     deviceId: string,
     params: TronSignTxParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<TronSignedTx>> {
+  ): Promise<Response<TronSignedTx>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     try {
       if (!params.rawTxHex) {
@@ -62,7 +63,7 @@ export function createTronMethods(ctx: LedgerAdapterContext): ITronMethods {
     connectId: string,
     deviceId: string,
     params: TronSignMsgParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<TronSignature>> {
+  ): Promise<Response<TronSignature>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     try {
       const result = (await ctx.connectorCall(connectId, 'tronSignMessage', {

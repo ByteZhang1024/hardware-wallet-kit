@@ -6,8 +6,7 @@
     "examples/*"
   ],
   "scripts": {
-    "postinstall": "patch-package && node scripts/fix-ledger-packages.js",
-    "build": "yarn --cwd packages/core build && yarn --cwd packages/transport-core build && yarn --cwd packages/trezor-connector build && yarn --cwd packages/ledger-adapter build && yarn --cwd packages/ledger-connector-webhid build && yarn --cwd packages/trezor-adapter build && yarn --cwd packages/trezor-transport-electron build",
+    "build": "yarn workspaces run build",
     "dev": "yarn workspaces run dev",
     "test": "vitest run --passWithNoTests",
     "lint": "eslint packages --ext .ts,.tsx",

@@ -1,5 +1,6 @@
 import type { LedgerAdapterContext } from './types';
 import type {
+  Response,
   IBtcMethods,
   BtcGetAddressParams,
   BtcAddress,
@@ -18,7 +19,7 @@ export function createBtcMethods(ctx: LedgerAdapterContext): IBtcMethods {
     connectId: string,
     deviceId: string,
     params: BtcGetAddressParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<BtcAddress>> {
+  ): Promise<Response<BtcAddress>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'btc'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -46,7 +47,7 @@ export function createBtcMethods(ctx: LedgerAdapterContext): IBtcMethods {
     connectId: string,
     deviceId: string,
     params: BtcGetPublicKeyParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<BtcPublicKey>> {
+  ): Promise<Response<BtcPublicKey>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'btc'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -82,7 +83,7 @@ export function createBtcMethods(ctx: LedgerAdapterContext): IBtcMethods {
     connectId: string,
     deviceId: string,
     params: BtcSignTxParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<BtcSignedTx>> {
+  ): Promise<Response<BtcSignedTx>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'btc'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -120,7 +121,7 @@ export function createBtcMethods(ctx: LedgerAdapterContext): IBtcMethods {
     connectId: string,
     deviceId: string,
     params: BtcSignMsgParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<BtcSignature>> {
+  ): Promise<Response<BtcSignature>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'btc'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -144,7 +145,7 @@ export function createBtcMethods(ctx: LedgerAdapterContext): IBtcMethods {
   async function btcGetMasterFingerprint(
     connectId: string,
     deviceId: string
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<{ masterFingerprint: string }>> {
+  ): Promise<Response<{ masterFingerprint: string }>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'btc'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');

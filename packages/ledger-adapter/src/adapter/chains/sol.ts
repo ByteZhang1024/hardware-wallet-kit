@@ -1,5 +1,6 @@
 import type { LedgerAdapterContext } from './types';
 import type {
+  Response,
   ISolMethods,
   SolGetAddressParams,
   SolAddress,
@@ -18,7 +19,7 @@ export function createSolMethods(ctx: LedgerAdapterContext): ISolMethods {
     connectId: string,
     deviceId: string,
     params: SolGetAddressParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<SolAddress>> {
+  ): Promise<Response<SolAddress>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'sol'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -42,7 +43,7 @@ export function createSolMethods(ctx: LedgerAdapterContext): ISolMethods {
     connectId: string,
     deviceId: string,
     params: SolGetPublicKeyParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<SolPublicKey>> {
+  ): Promise<Response<SolPublicKey>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'sol'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -67,7 +68,7 @@ export function createSolMethods(ctx: LedgerAdapterContext): ISolMethods {
     connectId: string,
     deviceId: string,
     params: SolSignTxParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<SolSignedTx>> {
+  ): Promise<Response<SolSignedTx>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'sol'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
@@ -88,7 +89,7 @@ export function createSolMethods(ctx: LedgerAdapterContext): ISolMethods {
     connectId: string,
     deviceId: string,
     params: SolSignMsgParams
-  ): Promise<import('@bytezhang/hardware-wallet-core').Response<SolSignature>> {
+  ): Promise<Response<SolSignature>> {
     await ctx.ensureDevicePermission(connectId, deviceId);
     if (!(await ctx.verifyDeviceFingerprint(connectId, deviceId, 'sol'))) {
       return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
