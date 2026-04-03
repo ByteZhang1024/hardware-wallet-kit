@@ -34,6 +34,7 @@ export function deviceActionToPromise<T>(
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     let settled = false;
+    // eslint-disable-next-line prefer-const -- assigned once after declaration, but must be declared before use in cleanup
     let sub: { unsubscribe: () => void };
     let timer: ReturnType<typeof setTimeout> | null = null;
 

@@ -297,7 +297,7 @@ export class LedgerConnectorBase implements IConnector {
 
     try {
       return await doConnect(targetPath);
-    } catch (err) {
+    } catch {
       // Retry once: clear signer state but keep DMK (and BLE scan) alive
       this._resetSignersAndSessions();
       const dm2 = await this._getDeviceManager();

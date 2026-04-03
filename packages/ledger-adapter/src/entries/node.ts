@@ -4,7 +4,9 @@ import type { TransportProvider } from '../types';
 export function registerNodeTransport(options?: { logger?: unknown }): void {
   const provider: TransportProvider = {
     create: ({ logger } = {}) => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { DeviceManagementKitBuilder } = require('@ledgerhq/device-management-kit');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { nodeHidTransportFactory } = require('@ledgerhq/device-transport-kit-node-hid');
 
       const builder = new DeviceManagementKitBuilder();

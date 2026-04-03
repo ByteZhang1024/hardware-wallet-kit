@@ -10,10 +10,10 @@ import type {
 import { LedgerAdapter } from '../adapter/LedgerAdapter';
 
 function createMockConnector(): IConnector & {
-  _handlers: Map<string, Set<Function>>;
+  _handlers: Map<string, Set<(...args: unknown[]) => void>>;
   _emit: <K extends ConnectorEventType>(event: K, data: ConnectorEventMap[K]) => void;
 } {
-  const handlers = new Map<string, Set<Function>>();
+  const handlers = new Map<string, Set<(...args: unknown[]) => void>>();
 
   const connector = {
     _handlers: handlers,
@@ -55,14 +55,14 @@ function createMockConnector(): IConnector & {
 
     uiResponse: vi.fn(),
 
-    on: vi.fn().mockImplementation((event: string, handler: Function) => {
+    on: vi.fn().mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
       if (!handlers.has(event)) {
         handlers.set(event, new Set());
       }
       handlers.get(event)!.add(handler);
     }),
 
-    off: vi.fn().mockImplementation((event: string, handler: Function) => {
+    off: vi.fn().mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
       handlers.get(event)?.delete(handler);
     }),
 

@@ -3,13 +3,11 @@ import type {
   IConnector,
   ConnectorDevice,
   ConnectorSession,
-  ConnectorEventType,
-  ConnectorEventMap,
 } from '@bytezhang/hardware-wallet-core';
 import { LedgerAdapter } from '../adapter/LedgerAdapter';
 
 function createMockConnector(): IConnector {
-  const handlers = new Map<string, Set<Function>>();
+  const handlers = new Map<string, Set<(...args: unknown[]) => void>>();
 
   return {
     searchDevices: vi.fn().mockResolvedValue([
@@ -39,12 +37,12 @@ function createMockConnector(): IConnector {
 
     uiResponse: vi.fn(),
 
-    on: vi.fn().mockImplementation((event: string, handler: Function) => {
+    on: vi.fn().mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
       if (!handlers.has(event)) handlers.set(event, new Set());
       handlers.get(event)!.add(handler);
     }),
 
-    off: vi.fn().mockImplementation((event: string, handler: Function) => {
+    off: vi.fn().mockImplementation((event: string, handler: (...args: unknown[]) => void) => {
       handlers.get(event)?.delete(handler);
     }),
 
