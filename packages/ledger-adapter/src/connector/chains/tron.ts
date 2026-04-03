@@ -78,6 +78,13 @@ export async function tronSignTransaction(
   sessionId: string,
   params: TronSignTransactionCallParams
 ): Promise<{ signature: string }> {
+  if (!params.rawTxHex) {
+    throw Object.assign(
+      new Error('TRON signing requires a protobuf-encoded raw transaction hex (rawTxHex).'),
+      { code: 7 } // HardwareErrorCode.InvalidParams
+    );
+  }
+
   const path = normalizePath(params.path);
   return _withTronAppRetry(ctx, sessionId, async (signer, sid) => {
     ctx.emit('ui-event', {

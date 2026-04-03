@@ -78,7 +78,7 @@ describe('LedgerAdapter Integration', () => {
       publicKey: '0xpk',
     });
 
-    const addrResult = await adapter.evm()!.evmGetAddress('dev-1', '', {
+    const addrResult = await adapter.evmGetAddress('dev-1', '', {
       path: "m/44'/60'/0'/0/0",
     });
     expect(addrResult.success).toBe(true);
@@ -93,15 +93,15 @@ describe('LedgerAdapter Integration', () => {
       s: '0xccdd',
     });
 
-    const signResult = await adapter.evm()!.evmSignTransaction('dev-1', '', {
+    const signResult = await adapter.evmSignTransaction('dev-1', '', {
       path: "m/44'/60'/0'/0/0",
       serializedTx: '0x02e50180843b9aca00825208940000000000000000000000000000000000000000808080',
     });
     expect(signResult.success).toBe(true);
     if (signResult.success) {
-      // r/s are zero-padded to 64 hex chars (32 bytes) with 0x prefix
-      expect(signResult.payload.r).toBe('0x' + 'aabb'.padStart(64, '0'));
-      expect(signResult.payload.s).toBe('0x' + 'ccdd'.padStart(64, '0'));
+      // Adapter passes through the connector result as-is
+      expect(signResult.payload.r).toBe('0xaabb');
+      expect(signResult.payload.s).toBe('0xccdd');
     }
   });
 
@@ -120,7 +120,7 @@ describe('LedgerAdapter Integration', () => {
       adapter.deviceConnectResponse('confirm');
     });
 
-    const result = await adapter.evm()!.evmGetAddress('dev-1', '', {
+    const result = await adapter.evmGetAddress('dev-1', '', {
       path: "m/44'/60'/0'/0/0",
     });
 

@@ -11,10 +11,38 @@ import type {
   Response,
   ChainCapability,
   ChainForFingerprint,
-  IEvmMethods,
-  IBtcMethods,
-  ISolMethods,
-  ITronMethods,
+  EvmGetAddressParams,
+  EvmAddress,
+  EvmGetPublicKeyParams,
+  EvmPublicKey,
+  EvmSignTxParams,
+  EvmSignedTx,
+  EvmSignMsgParams,
+  EvmSignTypedDataParams,
+  EvmSignature,
+  ProgressCallback,
+  BtcGetAddressParams,
+  BtcAddress,
+  BtcGetPublicKeyParams,
+  BtcPublicKey,
+  BtcSignTxParams,
+  BtcSignedTx,
+  BtcSignMsgParams,
+  BtcSignature,
+  SolGetAddressParams,
+  SolAddress,
+  SolGetPublicKeyParams,
+  SolPublicKey,
+  SolSignTxParams,
+  SolSignedTx,
+  SolSignMsgParams,
+  SolSignature,
+  TronGetAddressParams,
+  TronAddress,
+  TronSignTxParams,
+  TronSignedTx,
+  TronSignMsgParams,
+  TronSignature,
 } from '@bytezhang/hardware-wallet-core';
 import {
   success,
@@ -25,10 +53,15 @@ import {
   UI_REQUEST,
   CHAIN_FINGERPRINT_PATHS,
   deriveDeviceFingerprint,
+  batchCall,
 } from '@bytezhang/hardware-wallet-core';
-import { mapLedgerError, isDeviceDisconnectedError, isDeviceLockedError } from '../errors';
-import { createEvmMethods, createBtcMethods, createSolMethods, createTronMethods } from './chains';
-import type { LedgerAdapterContext } from './chains';
+import {
+  mapLedgerError,
+  isDeviceDisconnectedError,
+  isDeviceLockedError,
+  isWrongAppError,
+} from '../errors';
+import { AppManager } from '../app/AppManager';
 
 /**
  * Ledger hardware wallet adapter that delegates to an IConnector.
@@ -194,33 +227,218 @@ export class LedgerAdapter implements IHardwareWallet {
   }
 
   // ---------------------------------------------------------------------------
-  // Chain capability accessors
+  // Chain call helper
   // ---------------------------------------------------------------------------
 
-  private _adapterContext: LedgerAdapterContext = {
-    ensureDevicePermission: (cid, did) => this._ensureDevicePermission(cid, did),
-    verifyDeviceFingerprint: (cid, did, chain) =>
-      this._verifyDeviceFingerprint(cid, did, chain as ChainForFingerprint),
-    connectorCall: (cid, method, params) => this.connectorCall(cid, method, params),
-    errorToFailure: err => this.errorToFailure(err),
-  };
+  private async callChain<T>(
+    connectId: string,
+    deviceId: string,
+    chain: string,
+    method: string,
+    params: unknown,
+    skipFingerprint = false
+  ): Promise<Response<T>> {
+    await this._ensureDevicePermission(connectId, deviceId);
+    if (
+      !skipFingerprint &&
+      !(await this._verifyDeviceFingerprint(connectId, deviceId, chain as ChainForFingerprint))
+    ) {
+      return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
+    }
+    try {
+      const result = await this.connectorCall(connectId, method, params);
+      return success(result as T);
+    } catch (err) {
+      return this.errorToFailure(err);
+    }
+  }
 
-  private _evmMethods = createEvmMethods(this._adapterContext);
-  private _btcMethods = createBtcMethods(this._adapterContext);
-  private _solMethods = createSolMethods(this._adapterContext);
-  private _tronMethods = createTronMethods(this._adapterContext);
+  // ---------------------------------------------------------------------------
+  // EVM chain methods
+  // ---------------------------------------------------------------------------
 
-  evm(): IEvmMethods | null {
-    return this._evmMethods;
+  evmGetAddress(connectId: string, deviceId: string, params: EvmGetAddressParams) {
+    return this.callChain<EvmAddress>(connectId, deviceId, 'evm', 'evmGetAddress', params);
   }
-  btc(): IBtcMethods | null {
-    return this._btcMethods;
+
+  evmGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: EvmGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return batchCall(params, p => this.evmGetAddress(connectId, deviceId, p), onProgress);
   }
-  sol(): ISolMethods | null {
-    return this._solMethods;
+
+  evmGetPublicKey(connectId: string, deviceId: string, params: EvmGetPublicKeyParams) {
+    return this.callChain<EvmPublicKey>(connectId, deviceId, 'evm', 'evmGetAddress', params);
   }
-  tron(): ITronMethods | null {
-    return this._tronMethods;
+
+  evmSignTransaction(
+    connectId: string,
+    deviceId: string,
+    params: EvmSignTxParams
+  ): Promise<Response<EvmSignedTx>> {
+    if (!params.serializedTx) {
+      return Promise.resolve(
+        failure(
+          HardwareErrorCode.InvalidParams,
+          'Ledger requires a pre-serialized transaction (serializedTx). Provide an RLP-encoded hex string.'
+        )
+      );
+    }
+    return this.callChain<EvmSignedTx>(connectId, deviceId, 'evm', 'evmSignTransaction', params);
+  }
+
+  evmSignMessage(connectId: string, deviceId: string, params: EvmSignMsgParams) {
+    return this.callChain<EvmSignature>(connectId, deviceId, 'evm', 'evmSignMessage', params);
+  }
+
+  evmSignTypedData(
+    connectId: string,
+    deviceId: string,
+    params: EvmSignTypedDataParams
+  ): Promise<Response<EvmSignature>> {
+    if (params.mode === 'hash') {
+      return Promise.resolve(
+        failure(
+          HardwareErrorCode.MethodNotSupported,
+          'Ledger does not support hash-only EIP-712 signing. Use mode "full" with the complete typed data structure.'
+        )
+      );
+    }
+    return this.callChain<EvmSignature>(connectId, deviceId, 'evm', 'evmSignTypedData', params);
+  }
+
+  // ---------------------------------------------------------------------------
+  // BTC chain methods
+  // ---------------------------------------------------------------------------
+
+  btcGetAddress(connectId: string, deviceId: string, params: BtcGetAddressParams) {
+    return this.callChain<BtcAddress>(connectId, deviceId, 'btc', 'btcGetAddress', params);
+  }
+
+  btcGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: BtcGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return batchCall(params, p => this.btcGetAddress(connectId, deviceId, p), onProgress);
+  }
+
+  btcGetPublicKey(connectId: string, deviceId: string, params: BtcGetPublicKeyParams) {
+    return this.callChain<BtcPublicKey>(connectId, deviceId, 'btc', 'btcGetPublicKey', params);
+  }
+
+  btcSignTransaction(
+    connectId: string,
+    deviceId: string,
+    params: BtcSignTxParams
+  ): Promise<Response<BtcSignedTx>> {
+    if (!params.psbt) {
+      return Promise.resolve(
+        failure(
+          HardwareErrorCode.InvalidParams,
+          'Ledger requires PSBT format for BTC transaction signing. Provide params.psbt.'
+        )
+      );
+    }
+    return this.callChain<BtcSignedTx>(connectId, deviceId, 'btc', 'btcSignTransaction', params);
+  }
+
+  btcSignMessage(connectId: string, deviceId: string, params: BtcSignMsgParams) {
+    return this.callChain<BtcSignature>(connectId, deviceId, 'btc', 'btcSignMessage', params);
+  }
+
+  btcGetMasterFingerprint(connectId: string, deviceId: string) {
+    return this.callChain<{ masterFingerprint: string }>(
+      connectId,
+      deviceId,
+      'btc',
+      'btcGetMasterFingerprint',
+      {}
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // SOL chain methods
+  // ---------------------------------------------------------------------------
+
+  solGetAddress(connectId: string, deviceId: string, params: SolGetAddressParams) {
+    return this.callChain<SolAddress>(connectId, deviceId, 'sol', 'solGetAddress', params);
+  }
+
+  solGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: SolGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return batchCall(params, p => this.solGetAddress(connectId, deviceId, p), onProgress);
+  }
+
+  solGetPublicKey(connectId: string, deviceId: string, params: SolGetPublicKeyParams) {
+    return this.callChain<SolPublicKey>(connectId, deviceId, 'sol', 'solGetAddress', params);
+  }
+
+  solSignTransaction(connectId: string, deviceId: string, params: SolSignTxParams) {
+    return this.callChain<SolSignedTx>(connectId, deviceId, 'sol', 'solSignTransaction', params);
+  }
+
+  solSignMessage(connectId: string, deviceId: string, params: SolSignMsgParams) {
+    return this.callChain<SolSignature>(connectId, deviceId, 'sol', 'solSignMessage', params);
+  }
+
+  // ---------------------------------------------------------------------------
+  // TRON chain methods
+  // ---------------------------------------------------------------------------
+
+  tronGetAddress(connectId: string, deviceId: string, params: TronGetAddressParams) {
+    return this.callChain<TronAddress>(connectId, deviceId, 'tron', 'tronGetAddress', params, true);
+  }
+
+  tronGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: TronGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return batchCall(params, p => this.tronGetAddress(connectId, deviceId, p), onProgress);
+  }
+
+  tronSignTransaction(
+    connectId: string,
+    deviceId: string,
+    params: TronSignTxParams
+  ): Promise<Response<TronSignedTx>> {
+    if (!params.rawTxHex) {
+      return Promise.resolve(
+        failure(
+          HardwareErrorCode.InvalidParams,
+          'TRON signing requires a protobuf-encoded raw transaction hex (rawTxHex).'
+        )
+      );
+    }
+    return this.callChain<TronSignedTx>(
+      connectId,
+      deviceId,
+      'tron',
+      'tronSignTransaction',
+      params,
+      true
+    );
+  }
+
+  tronSignMessage(connectId: string, deviceId: string, params: TronSignMsgParams) {
+    return this.callChain<TronSignature>(
+      connectId,
+      deviceId,
+      'tron',
+      'tronSignMessage',
+      params,
+      true
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -567,12 +785,35 @@ export class LedgerAdapter implements IHardwareWallet {
         return this.connector.call(retrySessionId, method, params);
       }
       if (isDeviceLockedError(err)) {
-        console.log('[LedgerAdapter] device locked, waiting for unlock...');
         await this._waitForDeviceConnect(0);
-        console.log('[LedgerAdapter] unlock confirmed, retrying:', method);
         return this.connector.call(sessionId, method, params);
       }
-      console.log('[LedgerAdapter] unhandled error, throwing');
+      if (isWrongAppError(err)) {
+        const METHOD_CHAIN_MAP: Record<string, string> = {
+          evm: 'ETH',
+          btc: 'BTC',
+          sol: 'SOL',
+          tron: 'TRX',
+        };
+        const prefix = method.replace(/[A-Z].*$/, '');
+        const chain = METHOD_CHAIN_MAP[prefix];
+        const appName = chain ? AppManager.getAppName(chain) : undefined;
+        if (appName) {
+          // Notify UI to show "please confirm open app on device"
+          (this.connector as any).emit?.('ui-event', {
+            type: 'confirm-open-app',
+            payload: { chain: appName },
+          });
+          // Open the correct app on device and wait until it's running
+          const dmk = (this.connector as any).getDmk?.();
+          if (dmk) {
+            const mgr = new AppManager(dmk);
+            await mgr.ensureAppOpen(sessionId, appName);
+          }
+          (this.connector as any).emit?.('ui-event', { type: 'interaction-complete' });
+          return this.connector.call(sessionId, method, params);
+        }
+      }
       throw err;
     }
   }
@@ -617,6 +858,14 @@ export class LedgerAdapter implements IHardwareWallet {
    */
   private errorToFailure<T>(err: unknown): Response<T> {
     console.error('[LedgerAdapter] error:', err);
+
+    // If the error carries an explicit HardwareErrorCode (e.g. validation errors
+    // thrown by connector chain methods), use it directly.
+    if (err && typeof err === 'object' && typeof (err as any).code === 'number') {
+      const e = err as { code: number; message?: string };
+      return failure(e.code, e.message ?? 'Unknown error');
+    }
+
     const mapped = mapLedgerError(err);
 
     // DeviceLocked is handled by connectorCall retry logic (_waitForDeviceConnect).

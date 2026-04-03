@@ -15,7 +15,7 @@ export interface EvmGetAddressCallParams {
 export interface EvmSignTransactionCallParams {
   path: string;
   /** RLP-serialized transaction hex (0x-prefixed or plain) */
-  serializedTx: string;
+  serializedTx?: string;
 }
 
 export interface EvmSignMessageCallParams {
@@ -26,6 +26,7 @@ export interface EvmSignMessageCallParams {
 export interface EvmSignTypedDataCallParams {
   path: string;
   data: unknown;
+  mode?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -56,6 +57,15 @@ export async function evmSignTransaction(
   sessionId: string,
   params: EvmSignTransactionCallParams
 ): Promise<{ v: string; r: string; s: string }> {
+  if (!params.serializedTx) {
+    throw Object.assign(
+      new Error(
+        'Ledger requires a pre-serialized transaction (serializedTx). Provide an RLP-encoded hex string.'
+      ),
+      { code: 7 } // HardwareErrorCode.InvalidParams
+    );
+  }
+
   const signer = await _getEthSigner(ctx, sessionId);
   const path = normalizePath(params.path);
 
@@ -97,6 +107,15 @@ export async function evmSignTypedData(
   sessionId: string,
   params: EvmSignTypedDataCallParams
 ): Promise<{ signature: string }> {
+  if (params.mode === 'hash') {
+    throw Object.assign(
+      new Error(
+        'Ledger does not support hash-only EIP-712 signing. Use mode "full" with the complete typed data structure.'
+      ),
+      { code: 10 } // HardwareErrorCode.MethodNotSupported
+    );
+  }
+
   const signer = await _getEthSigner(ctx, sessionId);
   const path = normalizePath(params.path);
 

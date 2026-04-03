@@ -208,37 +208,37 @@ export class LedgerAdapterHost {
 
       // EVM
       case 'evmGetAddress':
-        return this._adapter.evm()!.evmGetAddress(
+        return this._adapter.evmGetAddress(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'evmGetAddresses':
-        return this._adapter.evm()!.evmGetAddresses(
+        return this._adapter.evmGetAddresses(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'evmGetPublicKey':
-        return this._adapter.evm()!.evmGetPublicKey(
+        return this._adapter.evmGetPublicKey(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'evmSignTransaction':
-        return this._adapter.evm()!.evmSignTransaction(
+        return this._adapter.evmSignTransaction(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'evmSignMessage':
-        return this._adapter.evm()!.evmSignMessage(
+        return this._adapter.evmSignMessage(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'evmSignTypedData':
-        return this._adapter.evm()!.evmSignTypedData(
+        return this._adapter.evmSignTypedData(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
@@ -246,68 +246,68 @@ export class LedgerAdapterHost {
 
       // BTC
       case 'btcGetAddress':
-        return this._adapter.btc()!.btcGetAddress(
+        return this._adapter.btcGetAddress(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'btcGetAddresses':
-        return this._adapter.btc()!.btcGetAddresses(
+        return this._adapter.btcGetAddresses(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'btcGetPublicKey':
-        return this._adapter.btc()!.btcGetPublicKey(
+        return this._adapter.btcGetPublicKey(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'btcSignTransaction':
-        return this._adapter.btc()!.btcSignTransaction(
+        return this._adapter.btcSignTransaction(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'btcSignMessage':
-        return this._adapter.btc()!.btcSignMessage(
+        return this._adapter.btcSignMessage(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'btcGetMasterFingerprint':
-        return this._adapter.btc()!.btcGetMasterFingerprint(
+        return this._adapter.btcGetMasterFingerprint(
           p!.connectId as string,
           p!.deviceId as string,
         );
 
       // SOL
       case 'solGetAddress':
-        return this._adapter.sol()!.solGetAddress(
+        return this._adapter.solGetAddress(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'solGetAddresses':
-        return this._adapter.sol()!.solGetAddresses(
+        return this._adapter.solGetAddresses(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'solGetPublicKey':
-        return this._adapter.sol()!.solGetPublicKey(
+        return this._adapter.solGetPublicKey(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'solSignTransaction':
-        return this._adapter.sol()!.solSignTransaction(
+        return this._adapter.solSignTransaction(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'solSignMessage':
-        return this._adapter.sol()!.solSignMessage(
+        return this._adapter.solSignMessage(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
@@ -315,25 +315,25 @@ export class LedgerAdapterHost {
 
       // TRON
       case 'tronGetAddress':
-        return this._adapter.tron()!.tronGetAddress(
+        return this._adapter.tronGetAddress(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'tronGetAddresses':
-        return this._adapter.tron()!.tronGetAddresses(
+        return this._adapter.tronGetAddresses(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'tronSignTransaction':
-        return this._adapter.tron()!.tronSignTransaction(
+        return this._adapter.tronSignTransaction(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,
         );
       case 'tronSignMessage':
-        return this._adapter.tron()!.tronSignMessage(
+        return this._adapter.tronSignMessage(
           p!.connectId as string,
           p!.deviceId as string,
           p!.params as any,

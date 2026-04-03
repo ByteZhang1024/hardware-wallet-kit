@@ -155,6 +155,13 @@ export async function btcSignTransaction(
   sessionId: string,
   params: BtcSignTransactionCallParams
 ): Promise<{ signedPsbt: string }> {
+  if (!params.psbt) {
+    throw Object.assign(
+      new Error('Ledger requires PSBT format for BTC transaction signing. Provide params.psbt.'),
+      { code: 7 } // HardwareErrorCode.InvalidParams
+    );
+  }
+
   const btcSigner = await _createBtcSigner(ctx, sessionId);
 
   try {

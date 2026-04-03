@@ -154,7 +154,8 @@ export interface IUiHandler {
   }): Promise<void>;
 }
 
-export interface IHardwareWallet<TConfig = unknown> {
+export interface IHardwareWallet<TConfig = unknown>
+  extends IEvmMethods, IBtcMethods, ISolMethods, ITronMethods {
   readonly vendor: string;
   readonly activeTransport: TransportType | null;
 
@@ -172,13 +173,6 @@ export interface IHardwareWallet<TConfig = unknown> {
   getDeviceInfo(connectId: string, deviceId: string): Promise<Response<DeviceInfo>>;
   getSupportedChains(): ChainCapability[];
   cancel(connectId: string): void;
-
-  // Chain capability accessors
-  // Returns the chain methods object, or null if unsupported by this vendor.
-  evm(): IEvmMethods | null;
-  btc(): IBtcMethods | null;
-  sol(): ISolMethods | null;
-  tron(): ITronMethods | null;
 
   // Device fingerprint
   /**

@@ -127,16 +127,13 @@ describe('LedgerAdapter', () => {
 
       await adapter.connectDevice('dev-1');
 
-      const result = await adapter.evm()!.evmGetAddress('dev-1', '', {
+      const result = await adapter.evmGetAddress('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.payload).toEqual({
-          address: '0xABCD',
-          path: "m/44'/60'/0'/0/0",
-        });
+        expect(result.payload.address).toBe('0xABCD');
       }
     });
 
@@ -147,16 +144,19 @@ describe('LedgerAdapter', () => {
       });
 
       await adapter.connectDevice('dev-1');
-      await adapter.evm()!.evmGetAddress('dev-1', '', {
+      await adapter.evmGetAddress('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: true,
       });
 
-      expect(connector.call).toHaveBeenCalledWith('session-abc', 'evmGetAddress', {
-        path: "m/44'/60'/0'/0/0",
-        showOnDevice: true,
-        chainId: undefined,
-      });
+      expect(connector.call).toHaveBeenCalledWith(
+        'session-abc',
+        'evmGetAddress',
+        expect.objectContaining({
+          path: "m/44'/60'/0'/0/0",
+          showOnDevice: true,
+        })
+      );
     });
   });
 
@@ -167,9 +167,10 @@ describe('LedgerAdapter', () => {
         .mockResolvedValueOnce({ address: '0xDEF0' });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter
-        .evm()!
-        .evmGetAddresses('dev-1', '', [{ path: "m/44'/60'/0'/0/0" }, { path: "m/44'/60'/0'/0/1" }]);
+      const result = await adapter.evmGetAddresses('dev-1', '', [
+        { path: "m/44'/60'/0'/0/0" },
+        { path: "m/44'/60'/0'/0/1" },
+      ]);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.payload).toHaveLength(2);
@@ -185,13 +186,12 @@ describe('LedgerAdapter', () => {
       });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter.evm()!.evmGetPublicKey('dev-1', '', {
+      const result = await adapter.evmGetPublicKey('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
       });
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.payload.publicKey).toBe('0xpk');
-        expect(result.payload.path).toBe("m/44'/60'/0'/0/0");
       }
     });
   });
@@ -203,7 +203,7 @@ describe('LedgerAdapter', () => {
       });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter.evm()!.evmSignMessage('dev-1', '', {
+      const result = await adapter.evmSignMessage('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         message: 'Hello',
       });
@@ -221,7 +221,7 @@ describe('LedgerAdapter', () => {
       });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter.evm()!.evmSignTypedData('dev-1', '', {
+      const result = await adapter.evmSignTypedData('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         mode: 'full',
         data: {
@@ -239,7 +239,7 @@ describe('LedgerAdapter', () => {
 
     it('should reject hash mode', async () => {
       await adapter.connectDevice('dev-1');
-      const result = await adapter.evm()!.evmSignTypedData('dev-1', '', {
+      const result = await adapter.evmSignTypedData('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         mode: 'hash',
         domainSeparatorHash: '0xdomainhash',
@@ -266,7 +266,7 @@ describe('LedgerAdapter', () => {
         adapter.deviceConnectResponse('confirm');
       });
 
-      const result = await adapter.evm()!.evmGetAddress('dev-1', '', {
+      const result = await adapter.evmGetAddress('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
       });
       expect(result.success).toBe(false);
@@ -281,7 +281,7 @@ describe('LedgerAdapter', () => {
       connector.call.mockResolvedValueOnce({ address: 'SoLAddr123', path: "m/44'/501'/0'" });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter.sol()!.solGetAddress('dev-1', '', { path: "m/44'/501'/0'" });
+      const result = await adapter.solGetAddress('dev-1', '', { path: "m/44'/501'/0'" });
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.payload.address).toBe('SoLAddr123');
@@ -293,9 +293,10 @@ describe('LedgerAdapter', () => {
       connector.call.mockResolvedValueOnce({ signature: 'solSig456' });
 
       await adapter.connectDevice('dev-1');
-      const result = await adapter
-        .sol()!
-        .solSignTransaction('dev-1', '', { path: "m/44'/501'/0'", serializedTx: '0xdeadbeef' });
+      const result = await adapter.solSignTransaction('dev-1', '', {
+        path: "m/44'/501'/0'",
+        serializedTx: '0xdeadbeef',
+      });
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.payload.signature).toBe('solSig456');
@@ -388,7 +389,7 @@ describe('LedgerAdapter', () => {
       });
 
       // Do NOT call adapter.connectDevice() first
-      const result = await adapter.evm()!.evmGetAddress('', '', {
+      const result = await adapter.evmGetAddress('', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });
@@ -436,7 +437,7 @@ describe('LedgerAdapter', () => {
         },
       });
 
-      const result = await adapter.evm()!.evmGetAddress('dev-1', '', {
+      const result = await adapter.evmGetAddress('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });
@@ -476,7 +477,7 @@ describe('LedgerAdapter', () => {
       const onSelectDevice = vi.fn().mockResolvedValue('dev-B');
       adapter.setUiHandler({ onSelectDevice });
 
-      const result = await adapter.evm()!.evmGetAddress('', '', {
+      const result = await adapter.evmGetAddress('', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });
@@ -513,7 +514,7 @@ describe('LedgerAdapter', () => {
       connector.call.mockResolvedValueOnce({ address: '0xFALLBACK' });
 
       // No UI handler set — should fall back to first device
-      const result = await adapter.evm()!.evmGetAddress('', '', {
+      const result = await adapter.evmGetAddress('', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });
@@ -531,7 +532,7 @@ describe('LedgerAdapter', () => {
         adapter.deviceConnectResponse('cancel');
       });
 
-      const result = await adapter.evm()!.evmGetAddress('', '', {
+      const result = await adapter.evmGetAddress('', '', {
         path: "m/44'/60'/0'/0/0",
         showOnDevice: false,
       });

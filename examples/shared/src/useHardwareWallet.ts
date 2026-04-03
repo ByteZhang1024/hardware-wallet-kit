@@ -229,21 +229,21 @@ export function useHardwareWallet(providers: TransportProviders): UseHardwareWal
 
         // --- EVM (Cycles 1-4) ---
         evmGetAddress: () => run(async (a, cid, did) => {
-          log(`${vendor} ETH address`, await a.evm()!.evmGetAddress(cid, did, { path: ETH_PATH }));
+          log(`${vendor} ETH address`, await a.evmGetAddress(cid, did, { path: ETH_PATH }));
         }),
         evmGetPublicKey: () => run(async (a, cid, did) => {
-          log(`${vendor} ETH publicKey`, await a.evm()!.evmGetPublicKey(cid, did, { path: ETH_PATH }));
+          log(`${vendor} ETH publicKey`, await a.evmGetPublicKey(cid, did, { path: ETH_PATH }));
         }),
         evmBatchGetAddresses: () => run(async (a, cid, did) => {
           const paths = Array.from({ length: 10 }, (_, i) => ({
             path: `m/44'/60'/0'/0/${i}`,
           }));
-          log(`${vendor} batch ETH addresses`, await a.evm()!.evmGetAddresses(cid, did, paths, (p) => {
+          log(`${vendor} batch ETH addresses`, await a.evmGetAddresses(cid, did, paths, (p) => {
             log(`${vendor} progress: ${p.index + 1}/${p.total}`);
           }));
         }),
         evmSignTx: () => run(async (a, cid, did) => {
-          log(`${vendor} ETH signTx`, await a.evm()!.evmSignTransaction(cid, did, {
+          log(`${vendor} ETH signTx`, await a.evmSignTransaction(cid, did, {
             path: ETH_PATH,
             to: '0x0000000000000000000000000000000000000000',
             value: '0x0',
@@ -255,14 +255,14 @@ export function useHardwareWallet(providers: TransportProviders): UseHardwareWal
         }),
         // Cycle 1: EVM signMessage
         evmSignMessage: () => run(async (a, cid, did) => {
-          log(`${vendor} ETH signMessage`, await a.evm()!.evmSignMessage(cid, did, {
+          log(`${vendor} ETH signMessage`, await a.evmSignMessage(cid, did, {
             path: ETH_PATH,
             message: 'Hello OneKey',
           }));
         }),
         // Cycle 2: EVM signTypedData (Uniswap Permit2 example)
         evmSignTypedData: () => run(async (a, cid, did) => {
-          log(`${vendor} ETH signTypedData`, await a.evm()!.evmSignTypedData(cid, did, {
+          log(`${vendor} ETH signTypedData`, await a.evmSignTypedData(cid, did, {
             path: ETH_PATH,
             mode: 'full',
             data: {
@@ -308,20 +308,20 @@ export function useHardwareWallet(providers: TransportProviders): UseHardwareWal
 
         // --- BTC (Cycles 5-7) ---
         btcGetAddress: () => run(async (a, cid, did) => {
-          log(`${vendor} BTC address (segwit)`, await a.btc()!.btcGetAddress(cid, did, {
+          log(`${vendor} BTC address (segwit)`, await a.btcGetAddress(cid, did, {
             path: BTC_PATH_SEGWIT,
             scriptType: 'p2wpkh',
             coin: 'btc',
           }));
         }),
         btcGetPublicKey: () => run(async (a, cid, did) => {
-          log(`${vendor} BTC publicKey (xpub + fingerprint)`, await a.btc()!.btcGetPublicKey(cid, did, {
+          log(`${vendor} BTC publicKey (xpub + fingerprint)`, await a.btcGetPublicKey(cid, did, {
             path: BTC_ACCOUNT_PATH,
             coin: 'btc',
           }));
         }),
         btcSignTx: () => run(async (a, cid, did) => {
-          log(`${vendor} BTC signTx`, await a.btc()!.btcSignTransaction(cid, did, {
+          log(`${vendor} BTC signTx`, await a.btcSignTransaction(cid, did, {
             coin: 'btc',
             inputs: [{
               path: BTC_PATH_SEGWIT,
@@ -336,7 +336,7 @@ export function useHardwareWallet(providers: TransportProviders): UseHardwareWal
           }));
         }),
         btcSignMessage: () => run(async (a, cid, did) => {
-          log(`${vendor} BTC signMessage`, await a.btc()!.btcSignMessage(cid, did, {
+          log(`${vendor} BTC signMessage`, await a.btcSignMessage(cid, did, {
             path: BTC_PATH_SEGWIT,
             message: 'Hello OneKey BTC',
             coin: 'btc',
@@ -345,11 +345,11 @@ export function useHardwareWallet(providers: TransportProviders): UseHardwareWal
 
         // --- SOL (Cycles 8-9) ---
         solGetAddress: () => run(async (a, cid, did) => {
-          log(`${vendor} SOL address`, await a.sol()!.solGetAddress(cid, did, { path: SOL_PATH }));
+          log(`${vendor} SOL address`, await a.solGetAddress(cid, did, { path: SOL_PATH }));
         }),
         solSignTx: () => run(async (a, cid, did) => {
           // Mock serialized Solana transaction (base64-encoded)
-          log(`${vendor} SOL signTx`, await a.sol()!.solSignTransaction(cid, did, {
+          log(`${vendor} SOL signTx`, await a.solSignTransaction(cid, did, {
             path: SOL_PATH,
             serializedTx: 'AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEDE',
           }));

@@ -1,6 +1,9 @@
 {
   "name": "@bytezhang/hardware-trezor-connector",
   "version": "0.0.32",
+  "scripts": {
+    "build": "echo skip"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

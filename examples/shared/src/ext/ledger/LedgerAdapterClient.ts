@@ -1,29 +1,42 @@
 import type {
   IHardwareWallet,
   IUiHandler,
-  IEvmMethods,
-  IBtcMethods,
-  ISolMethods,
-  ITronMethods,
   DeviceInfo,
   DeviceEventListener,
   HardwareEventMap,
   TransportType,
   Response,
+  EvmGetAddressParams,
   EvmAddress,
+  EvmGetPublicKeyParams,
   EvmPublicKey,
+  EvmSignTxParams,
   EvmSignedTx,
+  EvmSignMsgParams,
+  EvmSignTypedDataParams,
   EvmSignature,
+  ProgressCallback,
+  BtcGetAddressParams,
   BtcAddress,
+  BtcGetPublicKeyParams,
   BtcPublicKey,
+  BtcSignTxParams,
   BtcSignedTx,
+  BtcSignMsgParams,
   BtcSignature,
+  SolGetAddressParams,
   SolAddress,
+  SolGetPublicKeyParams,
   SolPublicKey,
+  SolSignTxParams,
   SolSignedTx,
+  SolSignMsgParams,
   SolSignature,
+  TronGetAddressParams,
   TronAddress,
+  TronSignTxParams,
   TronSignedTx,
+  TronSignMsgParams,
   TronSignature,
   ChainCapability,
   ChainForFingerprint,
@@ -128,72 +141,87 @@ export class LedgerAdapterClient implements IHardwareWallet {
   }
 
   // ---------------------------------------------------------------------------
-  // Chain method objects (private)
+  // EVM chain methods
   // ---------------------------------------------------------------------------
 
-  private _evmMethods: IEvmMethods = {
-    evmGetAddress: (connectId, deviceId, params) =>
-      this._send('evmGetAddress', { connectId, deviceId, params }) as Promise<Response<EvmAddress>>,
-    evmGetAddresses: (connectId, deviceId, params) =>
-      // Note: onProgress cannot be serialized over chrome.runtime messaging.
-      this._send('evmGetAddresses', { connectId, deviceId, params }) as Promise<Response<EvmAddress[]>>,
-    evmGetPublicKey: (connectId, deviceId, params) =>
-      this._send('evmGetPublicKey', { connectId, deviceId, params }) as Promise<Response<EvmPublicKey>>,
-    evmSignTransaction: (connectId, deviceId, params) =>
-      this._send('evmSignTransaction', { connectId, deviceId, params }) as Promise<Response<EvmSignedTx>>,
-    evmSignMessage: (connectId, deviceId, params) =>
-      this._send('evmSignMessage', { connectId, deviceId, params }) as Promise<Response<EvmSignature>>,
-    evmSignTypedData: (connectId, deviceId, params) =>
-      this._send('evmSignTypedData', { connectId, deviceId, params }) as Promise<Response<EvmSignature>>,
-  };
-
-  private _btcMethods: IBtcMethods = {
-    btcGetAddress: (connectId, deviceId, params) =>
-      this._send('btcGetAddress', { connectId, deviceId, params }) as Promise<Response<BtcAddress>>,
-    btcGetAddresses: (connectId, deviceId, params) =>
-      this._send('btcGetAddresses', { connectId, deviceId, params }) as Promise<Response<BtcAddress[]>>,
-    btcGetPublicKey: (connectId, deviceId, params) =>
-      this._send('btcGetPublicKey', { connectId, deviceId, params }) as Promise<Response<BtcPublicKey>>,
-    btcSignTransaction: (connectId, deviceId, params) =>
-      this._send('btcSignTransaction', { connectId, deviceId, params }) as Promise<Response<BtcSignedTx>>,
-    btcSignMessage: (connectId, deviceId, params) =>
-      this._send('btcSignMessage', { connectId, deviceId, params }) as Promise<Response<BtcSignature>>,
-    btcGetMasterFingerprint: (connectId, deviceId) =>
-      this._send('btcGetMasterFingerprint', { connectId, deviceId }) as Promise<Response<{ masterFingerprint: string }>>,
-  };
-
-  private _solMethods: ISolMethods = {
-    solGetAddress: (connectId, deviceId, params) =>
-      this._send('solGetAddress', { connectId, deviceId, params }) as Promise<Response<SolAddress>>,
-    solGetAddresses: (connectId, deviceId, params) =>
-      this._send('solGetAddresses', { connectId, deviceId, params }) as Promise<Response<SolAddress[]>>,
-    solGetPublicKey: (connectId, deviceId, params) =>
-      this._send('solGetPublicKey', { connectId, deviceId, params }) as Promise<Response<SolPublicKey>>,
-    solSignTransaction: (connectId, deviceId, params) =>
-      this._send('solSignTransaction', { connectId, deviceId, params }) as Promise<Response<SolSignedTx>>,
-    solSignMessage: (connectId, deviceId, params) =>
-      this._send('solSignMessage', { connectId, deviceId, params }) as Promise<Response<SolSignature>>,
-  };
-
-  private _tronMethods: ITronMethods = {
-    tronGetAddress: (connectId, deviceId, params) =>
-      this._send('tronGetAddress', { connectId, deviceId, params }) as Promise<Response<TronAddress>>,
-    tronGetAddresses: (connectId, deviceId, params) =>
-      this._send('tronGetAddresses', { connectId, deviceId, params }) as Promise<Response<TronAddress[]>>,
-    tronSignTransaction: (connectId, deviceId, params) =>
-      this._send('tronSignTransaction', { connectId, deviceId, params }) as Promise<Response<TronSignedTx>>,
-    tronSignMessage: (connectId, deviceId, params) =>
-      this._send('tronSignMessage', { connectId, deviceId, params }) as Promise<Response<TronSignature>>,
-  };
+  evmGetAddress(connectId: string, deviceId: string, params: EvmGetAddressParams) {
+    return this._send('evmGetAddress', { connectId, deviceId, params }) as Promise<Response<EvmAddress>>;
+  }
+  evmGetAddresses(connectId: string, deviceId: string, params: EvmGetAddressParams[], _onProgress?: ProgressCallback) {
+    return this._send('evmGetAddresses', { connectId, deviceId, params }) as Promise<Response<EvmAddress[]>>;
+  }
+  evmGetPublicKey(connectId: string, deviceId: string, params: EvmGetPublicKeyParams) {
+    return this._send('evmGetPublicKey', { connectId, deviceId, params }) as Promise<Response<EvmPublicKey>>;
+  }
+  evmSignTransaction(connectId: string, deviceId: string, params: EvmSignTxParams) {
+    return this._send('evmSignTransaction', { connectId, deviceId, params }) as Promise<Response<EvmSignedTx>>;
+  }
+  evmSignMessage(connectId: string, deviceId: string, params: EvmSignMsgParams) {
+    return this._send('evmSignMessage', { connectId, deviceId, params }) as Promise<Response<EvmSignature>>;
+  }
+  evmSignTypedData(connectId: string, deviceId: string, params: EvmSignTypedDataParams) {
+    return this._send('evmSignTypedData', { connectId, deviceId, params }) as Promise<Response<EvmSignature>>;
+  }
 
   // ---------------------------------------------------------------------------
-  // Chain capability accessors
+  // BTC chain methods
   // ---------------------------------------------------------------------------
 
-  evm(): IEvmMethods | null { return this._evmMethods; }
-  btc(): IBtcMethods | null { return this._btcMethods; }
-  sol(): ISolMethods | null { return this._solMethods; }
-  tron(): ITronMethods | null { return this._tronMethods; }
+  btcGetAddress(connectId: string, deviceId: string, params: BtcGetAddressParams) {
+    return this._send('btcGetAddress', { connectId, deviceId, params }) as Promise<Response<BtcAddress>>;
+  }
+  btcGetAddresses(connectId: string, deviceId: string, params: BtcGetAddressParams[], _onProgress?: ProgressCallback) {
+    return this._send('btcGetAddresses', { connectId, deviceId, params }) as Promise<Response<BtcAddress[]>>;
+  }
+  btcGetPublicKey(connectId: string, deviceId: string, params: BtcGetPublicKeyParams) {
+    return this._send('btcGetPublicKey', { connectId, deviceId, params }) as Promise<Response<BtcPublicKey>>;
+  }
+  btcSignTransaction(connectId: string, deviceId: string, params: BtcSignTxParams) {
+    return this._send('btcSignTransaction', { connectId, deviceId, params }) as Promise<Response<BtcSignedTx>>;
+  }
+  btcSignMessage(connectId: string, deviceId: string, params: BtcSignMsgParams) {
+    return this._send('btcSignMessage', { connectId, deviceId, params }) as Promise<Response<BtcSignature>>;
+  }
+  btcGetMasterFingerprint(connectId: string, deviceId: string) {
+    return this._send('btcGetMasterFingerprint', { connectId, deviceId }) as Promise<Response<{ masterFingerprint: string }>>;
+  }
+
+  // ---------------------------------------------------------------------------
+  // SOL chain methods
+  // ---------------------------------------------------------------------------
+
+  solGetAddress(connectId: string, deviceId: string, params: SolGetAddressParams) {
+    return this._send('solGetAddress', { connectId, deviceId, params }) as Promise<Response<SolAddress>>;
+  }
+  solGetAddresses(connectId: string, deviceId: string, params: SolGetAddressParams[], _onProgress?: ProgressCallback) {
+    return this._send('solGetAddresses', { connectId, deviceId, params }) as Promise<Response<SolAddress[]>>;
+  }
+  solGetPublicKey(connectId: string, deviceId: string, params: SolGetPublicKeyParams) {
+    return this._send('solGetPublicKey', { connectId, deviceId, params }) as Promise<Response<SolPublicKey>>;
+  }
+  solSignTransaction(connectId: string, deviceId: string, params: SolSignTxParams) {
+    return this._send('solSignTransaction', { connectId, deviceId, params }) as Promise<Response<SolSignedTx>>;
+  }
+  solSignMessage(connectId: string, deviceId: string, params: SolSignMsgParams) {
+    return this._send('solSignMessage', { connectId, deviceId, params }) as Promise<Response<SolSignature>>;
+  }
+
+  // ---------------------------------------------------------------------------
+  // TRON chain methods
+  // ---------------------------------------------------------------------------
+
+  tronGetAddress(connectId: string, deviceId: string, params: TronGetAddressParams) {
+    return this._send('tronGetAddress', { connectId, deviceId, params }) as Promise<Response<TronAddress>>;
+  }
+  tronGetAddresses(connectId: string, deviceId: string, params: TronGetAddressParams[], _onProgress?: ProgressCallback) {
+    return this._send('tronGetAddresses', { connectId, deviceId, params }) as Promise<Response<TronAddress[]>>;
+  }
+  tronSignTransaction(connectId: string, deviceId: string, params: TronSignTxParams) {
+    return this._send('tronSignTransaction', { connectId, deviceId, params }) as Promise<Response<TronSignedTx>>;
+  }
+  tronSignMessage(connectId: string, deviceId: string, params: TronSignMsgParams) {
+    return this._send('tronSignMessage', { connectId, deviceId, params }) as Promise<Response<TronSignature>>;
+  }
 
   // ---------------------------------------------------------------------------
   // Chain fingerprint
