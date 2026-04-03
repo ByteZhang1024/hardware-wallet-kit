@@ -287,8 +287,20 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<EvmAddress>(connectId, deviceId, 'evm', 'evmGetAddress', params);
   }
 
-  evmGetAddresses(connectId: string, deviceId: string, params: EvmGetAddressParams[], onProgress?: ProgressCallback) {
-    return this.callChainBatch<EvmGetAddressParams, EvmAddress>(connectId, deviceId, 'evm', 'evmGetAddress', params, onProgress);
+  evmGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: EvmGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return this.callChainBatch<EvmGetAddressParams, EvmAddress>(
+      connectId,
+      deviceId,
+      'evm',
+      'evmGetAddress',
+      params,
+      onProgress
+    );
   }
 
   evmGetPublicKey(connectId: string, deviceId: string, params: EvmGetPublicKeyParams) {
@@ -315,8 +327,20 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<BtcAddress>(connectId, deviceId, 'btc', 'btcGetAddress', params);
   }
 
-  btcGetAddresses(connectId: string, deviceId: string, params: BtcGetAddressParams[], onProgress?: ProgressCallback) {
-    return this.callChainBatch<BtcGetAddressParams, BtcAddress>(connectId, deviceId, 'btc', 'btcGetAddress', params, onProgress);
+  btcGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: BtcGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return this.callChainBatch<BtcGetAddressParams, BtcAddress>(
+      connectId,
+      deviceId,
+      'btc',
+      'btcGetAddress',
+      params,
+      onProgress
+    );
   }
 
   btcGetPublicKey(connectId: string, deviceId: string, params: BtcGetPublicKeyParams) {
@@ -349,8 +373,20 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<SolAddress>(connectId, deviceId, 'sol', 'solGetAddress', params);
   }
 
-  solGetAddresses(connectId: string, deviceId: string, params: SolGetAddressParams[], onProgress?: ProgressCallback) {
-    return this.callChainBatch<SolGetAddressParams, SolAddress>(connectId, deviceId, 'sol', 'solGetAddress', params, onProgress);
+  solGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: SolGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return this.callChainBatch<SolGetAddressParams, SolAddress>(
+      connectId,
+      deviceId,
+      'sol',
+      'solGetAddress',
+      params,
+      onProgress
+    );
   }
 
   solGetPublicKey(connectId: string, deviceId: string, params: SolGetPublicKeyParams) {
@@ -373,12 +409,32 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<TronAddress>(connectId, deviceId, 'tron', 'tronGetAddress', params, true);
   }
 
-  tronGetAddresses(connectId: string, deviceId: string, params: TronGetAddressParams[], onProgress?: ProgressCallback) {
-    return this.callChainBatch<TronGetAddressParams, TronAddress>(connectId, deviceId, 'tron', 'tronGetAddress', params, onProgress, true);
+  tronGetAddresses(
+    connectId: string,
+    deviceId: string,
+    params: TronGetAddressParams[],
+    onProgress?: ProgressCallback
+  ) {
+    return this.callChainBatch<TronGetAddressParams, TronAddress>(
+      connectId,
+      deviceId,
+      'tron',
+      'tronGetAddress',
+      params,
+      onProgress,
+      true
+    );
   }
 
   tronSignTransaction(connectId: string, deviceId: string, params: TronSignTxParams) {
-    return this.callChain<TronSignedTx>(connectId, deviceId, 'tron', 'tronSignTransaction', params, true);
+    return this.callChain<TronSignedTx>(
+      connectId,
+      deviceId,
+      'tron',
+      'tronSignTransaction',
+      params,
+      true
+    );
   }
 
   tronSignMessage(connectId: string, deviceId: string, params: TronSignMsgParams) {

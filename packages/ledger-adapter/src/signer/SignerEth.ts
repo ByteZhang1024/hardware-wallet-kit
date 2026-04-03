@@ -1,4 +1,4 @@
-import type { SignerEvmAddress, SignerEvmSignature } from '../types';
+import type { DeviceAction, SignerEvmAddress, SignerEvmSignature } from '../types';
 import { deviceActionToPromise } from './deviceActionToPromise';
 
 /**
@@ -6,10 +6,20 @@ import { deviceActionToPromise } from './deviceActionToPromise';
  * @ledgerhq/device-signer-kit-ethereum.
  */
 export interface ISdkSignerEth {
-  getAddress(derivationPath: string, options?: { checkOnDevice?: boolean }): unknown;
-  signTransaction(derivationPath: string, transaction: Uint8Array, options?: unknown): unknown;
-  signMessage(derivationPath: string, message: string | Uint8Array): unknown;
-  signTypedData(derivationPath: string, data: unknown): unknown;
+  getAddress(
+    derivationPath: string,
+    options?: { checkOnDevice?: boolean }
+  ): DeviceAction<SignerEvmAddress>;
+  signTransaction(
+    derivationPath: string,
+    transaction: Uint8Array,
+    options?: unknown
+  ): DeviceAction<SignerEvmSignature>;
+  signMessage(
+    derivationPath: string,
+    message: string | Uint8Array
+  ): DeviceAction<SignerEvmSignature>;
+  signTypedData(derivationPath: string, data: unknown): DeviceAction<SignerEvmSignature>;
 }
 
 /** Convert hex string (with or without 0x) to Uint8Array. */
@@ -52,7 +62,7 @@ export class SignerEth {
     );
     // checkOnDevice needs user interaction → long timeout; otherwise default 30s
     const timeout = checkOnDevice ? INTERACTIVE_TIMEOUT_MS : undefined;
-    return deviceActionToPromise<SignerEvmAddress>(action as any, this.onInteraction, timeout);
+    return deviceActionToPromise<SignerEvmAddress>(action, this.onInteraction, timeout);
   }
 
   async signTransaction(

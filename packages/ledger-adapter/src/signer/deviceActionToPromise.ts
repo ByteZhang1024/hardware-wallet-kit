@@ -1,13 +1,4 @@
-/** DeviceAction state emitted by DMK signer operations. */
-interface DeviceActionState<T> {
-  status: 'pending' | 'completed' | 'error';
-  output?: T;
-  error?: unknown;
-  intermediateValue?: {
-    requiredUserInteraction?: string;
-    [key: string]: unknown;
-  };
-}
+import type { DeviceAction } from '../types';
 
 /** Default timeout for non-interactive operations (e.g. getAddress without showOnDevice). */
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -20,15 +11,7 @@ const DEFAULT_TIMEOUT_MS = 30_000;
  *                   Pass 0 to disable. Default: 30s.
  */
 export function deviceActionToPromise<T>(
-  action: {
-    observable: {
-      subscribe(observer: {
-        next: (value: DeviceActionState<T>) => void;
-        error?: (err: unknown) => void;
-        complete?: () => void;
-      }): { unsubscribe: () => void };
-    };
-  },
+  action: DeviceAction<T>,
   onInteraction?: (interaction: string) => void,
   timeoutMs: number = DEFAULT_TIMEOUT_MS
 ): Promise<T> {

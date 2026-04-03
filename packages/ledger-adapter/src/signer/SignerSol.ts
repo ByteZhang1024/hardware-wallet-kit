@@ -1,3 +1,4 @@
+import type { DeviceAction } from '../types';
 import { deviceActionToPromise } from './deviceActionToPromise';
 
 /**
@@ -5,9 +6,17 @@ import { deviceActionToPromise } from './deviceActionToPromise';
  * @ledgerhq/device-signer-kit-solana.
  */
 export interface ISdkSignerSol {
-  getAddress(derivationPath: string, options?: { checkOnDevice?: boolean }): unknown;
-  signTransaction(derivationPath: string, transaction: Uint8Array, options?: unknown): unknown;
-  signMessage(derivationPath: string, message: string | Uint8Array, options?: unknown): unknown;
+  getAddress(derivationPath: string, options?: { checkOnDevice?: boolean }): DeviceAction<string>;
+  signTransaction(
+    derivationPath: string,
+    transaction: Uint8Array,
+    options?: unknown
+  ): DeviceAction<Uint8Array>;
+  signMessage(
+    derivationPath: string,
+    message: string | Uint8Array,
+    options?: unknown
+  ): DeviceAction<{ signature: string }>;
 }
 
 /**
@@ -29,7 +38,7 @@ export class SignerSol {
     const action = this._sdk.getAddress(derivationPath, {
       checkOnDevice: options?.checkOnDevice ?? false,
     });
-    return deviceActionToPromise<string>(action as any, this.onInteraction);
+    return deviceActionToPromise<string>(action, this.onInteraction);
   }
 
   /**
@@ -41,7 +50,7 @@ export class SignerSol {
     options?: unknown
   ): Promise<Uint8Array> {
     const action = this._sdk.signTransaction(derivationPath, transaction, options);
-    return deviceActionToPromise<Uint8Array>(action as any, this.onInteraction);
+    return deviceActionToPromise<Uint8Array>(action, this.onInteraction);
   }
 
   /**
@@ -54,6 +63,6 @@ export class SignerSol {
     options?: unknown
   ): Promise<{ signature: string }> {
     const action = this._sdk.signMessage(derivationPath, message, options);
-    return deviceActionToPromise<{ signature: string }>(action as any, this.onInteraction);
+    return deviceActionToPromise<{ signature: string }>(action, this.onInteraction);
   }
 }

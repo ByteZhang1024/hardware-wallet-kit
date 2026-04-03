@@ -33,6 +33,20 @@ export interface IDmk {
   close?(): void;
 }
 
+/**
+ * DMK DeviceAction — the Observable-based return type of all DMK signer methods.
+ * Used to type SDK signer interfaces without importing DMK packages.
+ */
+export interface DeviceAction<T> {
+  observable: {
+    subscribe(observer: {
+      next: (value: DeviceActionState<T>) => void;
+      error?: (err: unknown) => void;
+      complete?: () => void;
+    }): { unsubscribe: () => void };
+  };
+}
+
 export interface DeviceActionState<T> {
   status: 'pending' | 'completed' | 'error';
   output?: T;

@@ -1,4 +1,9 @@
-import { stripHex, hexToBytes, bytesToHex, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
+import {
+  stripHex,
+  hexToBytes,
+  bytesToHex,
+  HardwareErrorCode,
+} from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerBtc } from '../../signer/SignerBtc';
 import type { ConnectorContext } from './types';

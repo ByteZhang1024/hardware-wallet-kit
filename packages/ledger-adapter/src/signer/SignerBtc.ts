@@ -1,4 +1,4 @@
-import type { SignerBtcAddress } from '../types';
+import type { DeviceAction, SignerBtcAddress } from '../types';
 import { deviceActionToPromise } from './deviceActionToPromise';
 
 /** Decode hex string (with or without 0x prefix) to UTF-8 text. */
@@ -16,16 +16,25 @@ function hexToUtf8(hex: string): string {
  * @ledgerhq/device-signer-kit-bitcoin.
  */
 export interface ISdkSignerBtc {
-  getExtendedPublicKey(derivationPath: string, options?: { checkOnDevice?: boolean }): unknown;
+  getExtendedPublicKey(
+    derivationPath: string,
+    options?: { checkOnDevice?: boolean }
+  ): DeviceAction<string | { extendedPublicKey: string }>;
   getWalletAddress(
     wallet: unknown,
     addressIndex: number,
     options?: { checkOnDevice?: boolean; change?: boolean }
-  ): unknown;
-  getMasterFingerprint(options?: { skipOpenApp?: boolean }): unknown;
-  signPsbt(wallet: unknown, psbt: unknown, options?: unknown): unknown;
-  signTransaction(wallet: unknown, psbt: unknown, options?: unknown): unknown;
-  signMessage(derivationPath: string, message: string, options?: unknown): unknown;
+  ): DeviceAction<SignerBtcAddress>;
+  getMasterFingerprint(options?: {
+    skipOpenApp?: boolean;
+  }): DeviceAction<{ masterFingerprint: Uint8Array }>;
+  signPsbt(wallet: unknown, psbt: unknown, options?: unknown): DeviceAction<unknown[]>;
+  signTransaction(wallet: unknown, psbt: unknown, options?: unknown): DeviceAction<string>;
+  signMessage(
+    derivationPath: string,
+    message: string,
+    options?: unknown
+  ): DeviceAction<{ r: string; s: string; v: number }>;
 }
 
 /** Timeout for user-interactive operations (sign, verify). */
@@ -49,7 +58,7 @@ export class SignerBtc {
       checkOnDevice: options?.checkOnDevice ?? false,
       change: options?.change ?? false,
     });
-    return deviceActionToPromise<SignerBtcAddress>(action as any, this.onInteraction);
+    return deviceActionToPromise<SignerBtcAddress>(action, this.onInteraction);
   }
 
   async getExtendedPublicKey(
@@ -116,7 +125,7 @@ export class SignerBtc {
    */
   async signTransaction(wallet: unknown, psbt: unknown, options?: unknown): Promise<string> {
     const action = this._sdk.signTransaction(wallet, psbt, options);
-    return deviceActionToPromise<string>(action as any, this.onInteraction, INTERACTIVE_TIMEOUT_MS);
+    return deviceActionToPromise<string>(action, this.onInteraction, INTERACTIVE_TIMEOUT_MS);
   }
 
   /**
