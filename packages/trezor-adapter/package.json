@@ -1,6 +1,6 @@
 {
-  "name": "@originalix/trezor-adapter",
-  "version": "0.0.1",
+  "name": "@bytezhang/hardware-trezor-adapter",
+  "version": "0.0.32",
   "description": "Trezor hardware wallet adapter for OneKey",
   "author": "OneKey",
   "license": "MIT",
