@@ -4,6 +4,7 @@ import type {
   ExecuteDeviceActionReturnType,
   DeviceActionState as DmkDeviceActionState,
 } from '@ledgerhq/device-management-kit';
+import type { Address as EthAddress, Signature as EthSignature } from '@ledgerhq/device-signer-kit-ethereum';
 
 /**
  * Re-export DMK types under local aliases for backward compatibility.
@@ -29,17 +30,13 @@ export type DeviceAction<T> = ExecuteDeviceActionReturnType<T, any, any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DeviceActionState<T> = DmkDeviceActionState<T, any, any>;
 
-export interface SignerEvmAddress {
-  address: string;
-  publicKey: string;
-}
+/** ETH address result — re-exported from DMK for backward compatibility. */
+export type SignerEvmAddress = EthAddress;
 
-export interface SignerEvmSignature {
-  r: string;
-  s: string;
-  v: number;
-}
+/** ETH signature result — re-exported from DMK for backward compatibility. */
+export type SignerEvmSignature = EthSignature;
 
+/** BTC address result (WalletAddress not exported from DMK top-level). */
 export interface SignerBtcAddress {
   address: string;
 }
