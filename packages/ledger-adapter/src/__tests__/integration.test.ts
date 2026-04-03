@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { UI_REQUEST } from '@bytezhang/hardware-wallet-core';
 import type {
   IConnector,
   ConnectorDevice,
@@ -114,7 +115,7 @@ describe('LedgerAdapter Integration', () => {
     await adapter.connectDevice('dev-1');
 
     const unlockListener = vi.fn();
-    adapter.on('ui-request-device-connect' as any, (event: any) => {
+    adapter.on(UI_REQUEST.REQUEST_DEVICE_CONNECT, (event: any) => {
       unlockListener(event);
       // Confirm the prompt so the adapter retries (and gets the second locked error)
       adapter.deviceConnectResponse('confirm');

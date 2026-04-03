@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
+import { HardwareErrorCode, UI_REQUEST } from '@bytezhang/hardware-wallet-core';
 import type {
   IConnector,
   ConnectorDevice,
@@ -268,7 +268,7 @@ describe('LedgerAdapter', () => {
       await adapter.connectDevice('dev-1');
 
       // Respond to the unlock prompt so the adapter retries (and gets the second locked error)
-      adapter.on('ui-request-device-connect' as any, () => {
+      adapter.on(UI_REQUEST.REQUEST_DEVICE_CONNECT, () => {
         adapter.deviceConnectResponse('confirm');
       });
 
@@ -534,7 +534,7 @@ describe('LedgerAdapter', () => {
       connector.searchDevices.mockResolvedValue([]);
 
       // Listen for ui-request-device-connect and cancel immediately
-      adapter.on('ui-request-device-connect' as any, () => {
+      adapter.on(UI_REQUEST.REQUEST_DEVICE_CONNECT, () => {
         adapter.deviceConnectResponse('cancel');
       });
 

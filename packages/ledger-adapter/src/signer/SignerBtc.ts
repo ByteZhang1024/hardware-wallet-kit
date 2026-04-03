@@ -77,7 +77,7 @@ export class SignerBtc {
     try {
       // DMK returns { extendedPublicKey: string }, unwrap it
       const result = await deviceActionToPromise<string | { extendedPublicKey: string }>(
-        action as any,
+        action,
         this.onInteraction
       );
       console.log(
@@ -99,7 +99,7 @@ export class SignerBtc {
   async getMasterFingerprint(options?: { skipOpenApp?: boolean }): Promise<Uint8Array> {
     const action = this._sdk.getMasterFingerprint(options);
     const result = await deviceActionToPromise<{ masterFingerprint: Uint8Array }>(
-      action as any,
+      action,
       this.onInteraction
     );
     return result.masterFingerprint;
@@ -112,11 +112,7 @@ export class SignerBtc {
    */
   async signPsbt(wallet: unknown, psbt: unknown, options?: unknown): Promise<unknown[]> {
     const action = this._sdk.signPsbt(wallet, psbt, options);
-    return deviceActionToPromise<unknown[]>(
-      action as any,
-      this.onInteraction,
-      INTERACTIVE_TIMEOUT_MS
-    );
+    return deviceActionToPromise<unknown[]>(action, this.onInteraction, INTERACTIVE_TIMEOUT_MS);
   }
 
   /**
@@ -141,7 +137,7 @@ export class SignerBtc {
     // We receive hex-encoded message, so decode hex → UTF-8 text first.
     const action = this._sdk.signMessage(derivationPath, hexToUtf8(message), options);
     return deviceActionToPromise<{ r: string; s: string; v: number }>(
-      action as any,
+      action,
       this.onInteraction,
       INTERACTIVE_TIMEOUT_MS
     );

@@ -190,7 +190,11 @@ export class LedgerConnectorBase implements IConnector {
 
     // Build the context that chain handlers use
     this._ctx = {
-      emit: (event, data) => this._emit(event as ConnectorEventType, data as any),
+      emit: (event, data) =>
+        this._emit(
+          event as ConnectorEventType,
+          data as unknown as ConnectorEventMap[ConnectorEventType]
+        ),
       invalidateSession: sid => this._invalidateSession(sid),
       wrapError: err => this._wrapError(err),
       getOrCreateDmk: () => this._getOrCreateDmk(),
@@ -446,17 +450,20 @@ export class LedgerConnectorBase implements IConnector {
       '[DMK] _getOrCreateDmk: transportFactory type:',
       typeof transportFactory,
       'value:',
-      (transportFactory as any)?.name || String(transportFactory).substring(0, 80)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- debug introspection of dynamic factory
+      (transportFactory as Record<string, unknown>)?.name ||
+        String(transportFactory).substring(0, 80)
     );
 
     this._dmk = new DeviceManagementKitBuilder()
-      .addTransport(transportFactory as any)
+      .addTransport(transportFactory as unknown)
       .build() as unknown as IDmk;
 
     console.log(
       '[DMK] _getOrCreateDmk: DMK created, methods:',
       Object.keys(this._dmk)
-        .filter(k => typeof (this._dmk as any)[k] === 'function')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- debug introspection of DMK methods
+        .filter(k => typeof (this._dmk as unknown as Record<string, unknown>)[k] === 'function')
         .join(', ')
     );
 
@@ -548,7 +555,7 @@ export class LedgerConnectorBase implements IConnector {
   private _wrapError(err: unknown): Error {
     const mapped = mapLedgerError(err);
     const error = new Error(mapped.message);
-    (error as any).code = mapped.code;
+    Object.assign(error, { code: mapped.code });
     return error;
   }
 }

@@ -2,6 +2,8 @@ export interface DmkDiscoveredDevice {
   id: string;
   deviceModel: { id: string; productName: string; model: string; name: string };
   transport: string;
+  name?: string;
+  rssi?: number;
   [key: string]: unknown;
 }
 

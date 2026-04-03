@@ -45,9 +45,9 @@ export class LedgerDeviceManager {
               devices.map(d => ({
                 id: d.id,
                 deviceModel: d.deviceModel,
-                transport: (d as any).transport,
-                name: (d as any).name,
-                rssi: (d as any).rssi,
+                transport: d.transport,
+                name: d.name,
+                rssi: d.rssi,
                 // Dump all keys to see what else is available
                 _keys: Object.keys(d),
               }))
@@ -63,8 +63,8 @@ export class LedgerDeviceManager {
               devices.map(d => ({
                 path: d.id,
                 type: d.deviceModel.id,
-                name: (d as any).name,
-                transport: (d as any).transport,
+                name: d.name,
+                transport: d.transport,
               }))
             );
           } else {
@@ -93,8 +93,8 @@ export class LedgerDeviceManager {
           devices.map(d => ({
             path: d.id,
             type: d.deviceModel.id,
-            name: (d as any).name,
-            transport: (d as any).transport,
+            name: d.name,
+            transport: d.transport,
           }))
         );
       }
@@ -119,7 +119,7 @@ export class LedgerDeviceManager {
             JSON.stringify({
               id: d.id,
               deviceModel: d.deviceModel,
-              name: (d as any).name,
+              name: d.name,
             })
           );
           if (!previousIds.has(d.id)) {
@@ -128,8 +128,8 @@ export class LedgerDeviceManager {
               descriptor: {
                 path: d.id,
                 type: d.deviceModel.id,
-                name: (d as any).name,
-                transport: (d as any).transport,
+                name: d.name,
+                transport: d.transport,
               },
             });
           }
@@ -169,7 +169,7 @@ export class LedgerDeviceManager {
     console.log('[DMK] requestDevice() starting persistent BLE scan');
     this._discoverySub = this._dmk.startDiscovering().subscribe({
       next: d => {
-        console.log('[DMK] BLE discovered:', (d as any).name || d.id);
+        console.log('[DMK] BLE discovered:', d.name || d.id);
         this._discovered.set(d.id, d);
       },
       error: err => {

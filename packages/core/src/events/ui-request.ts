@@ -9,6 +9,7 @@ export const UI_REQUEST = {
   REQUEST_QR_SCAN: 'ui-request-qr-scan',
   REQUEST_DEVICE_PERMISSION: 'ui-request-device-permission',
   REQUEST_SELECT_DEVICE: 'ui-request-select-device',
+  REQUEST_DEVICE_CONNECT: 'ui-request-device-connect',
   CLOSE_UI_WINDOW: 'ui-close',
   DEVICE_PROGRESS: 'ui-device_progress',
   FIRMWARE_PROGRESS: 'ui-firmware-progress',

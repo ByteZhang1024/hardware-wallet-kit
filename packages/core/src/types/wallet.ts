@@ -35,6 +35,10 @@ export type UiRequestEvent =
   | { type: typeof UI_REQUEST.REQUEST_QR_SCAN; payload: { device: DeviceInfo } }
   | { type: typeof UI_REQUEST.REQUEST_DEVICE_PERMISSION; payload: Record<string, never> }
   | { type: typeof UI_REQUEST.REQUEST_SELECT_DEVICE; payload: { devices: DeviceInfo[] } }
+  | {
+      type: typeof UI_REQUEST.REQUEST_DEVICE_CONNECT;
+      payload: { message: string; retryCount: number; maxRetries: number };
+    }
   | { type: typeof UI_REQUEST.CLOSE_UI_WINDOW; payload: Record<string, never> };
 
 export type SdkEvent =
@@ -90,6 +94,10 @@ export interface HardwareEventMap {
   [UI_REQUEST.REQUEST_SELECT_DEVICE]: {
     type: typeof UI_REQUEST.REQUEST_SELECT_DEVICE;
     payload: { devices: DeviceInfo[] };
+  };
+  [UI_REQUEST.REQUEST_DEVICE_CONNECT]: {
+    type: typeof UI_REQUEST.REQUEST_DEVICE_CONNECT;
+    payload: { message: string; retryCount: number; maxRetries: number };
   };
   [UI_REQUEST.CLOSE_UI_WINDOW]: {
     type: typeof UI_REQUEST.CLOSE_UI_WINDOW;
@@ -173,6 +181,13 @@ export interface IHardwareWallet<TConfig = unknown>
   getDeviceInfo(connectId: string, deviceId: string): Promise<Response<DeviceInfo>>;
   getSupportedChains(): ChainCapability[];
   cancel(connectId: string): void;
+
+  /**
+   * Respond to a ui-request-device-connect event.
+   * Call with 'confirm' after the user connects/unlocks the device to retry,
+   * or 'cancel' to abort the operation.
+   */
+  deviceConnectResponse(type: 'confirm' | 'cancel'): void;
 
   // Device fingerprint
   /**

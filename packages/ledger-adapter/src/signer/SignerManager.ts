@@ -1,10 +1,11 @@
 import type { IDmk } from '../types';
 import { SignerEth } from './SignerEth';
+import type { ISdkSignerEth } from './SignerEth';
 
 type SignerEthBuilderFn = (args: {
   dmk: IDmk;
   sessionId: string;
-}) => { build(): unknown } | Promise<{ build(): unknown }>;
+}) => { build(): ISdkSignerEth } | Promise<{ build(): ISdkSignerEth }>;
 
 /**
  * Manages per-sessionId SignerEth instances.
@@ -30,7 +31,7 @@ export class SignerManager {
     const builder = await this._builderFn({ dmk: this._dmk, sessionId });
     const sdkSigner = builder.build();
     console.log('[DMK] SignerManager: new signer built');
-    const signer = new SignerEth(sdkSigner as any);
+    const signer = new SignerEth(sdkSigner);
     this._cache.set(sessionId, signer);
     return signer;
   }
@@ -44,11 +45,14 @@ export class SignerManager {
   }
 
   private static _defaultBuilder(): SignerEthBuilderFn {
-    let BuilderClass: any = null;
+    type BuilderCtor = new (args: { dmk: unknown; sessionId: string }) => {
+      build(): ISdkSignerEth;
+    };
+    let BuilderClass: BuilderCtor | null = null;
     return async args => {
       if (!BuilderClass) {
         const mod = await import('@ledgerhq/device-signer-kit-ethereum');
-        BuilderClass = mod.SignerEthBuilder;
+        BuilderClass = mod.SignerEthBuilder as unknown as BuilderCtor;
       }
       return new BuilderClass(args);
     };

@@ -50,16 +50,9 @@ export class SignerEth {
   ): Promise<SignerEvmAddress> {
     const checkOnDevice = options?.checkOnDevice ?? false;
     console.log('[DMK] getAddress → DMK:', { derivationPath, checkOnDevice });
-    console.log('[DMK] signer instance id:', (this as any)._instanceId ?? 'none');
     const action = this._sdk.getAddress(derivationPath, {
       checkOnDevice,
     });
-    console.log(
-      '[DMK] getAddress action created:',
-      !!action,
-      'hasObservable:',
-      !!(action as any)?.observable
-    );
     // checkOnDevice needs user interaction → long timeout; otherwise default 30s
     const timeout = checkOnDevice ? INTERACTIVE_TIMEOUT_MS : undefined;
     return deviceActionToPromise<SignerEvmAddress>(action, this.onInteraction, timeout);
@@ -71,7 +64,7 @@ export class SignerEth {
   ): Promise<SignerEvmSignature> {
     const action = this._sdk.signTransaction(derivationPath, hexToBytes(serializedTxHex));
     return deviceActionToPromise<SignerEvmSignature>(
-      action as any,
+      action,
       this.onInteraction,
       INTERACTIVE_TIMEOUT_MS
     );
@@ -83,7 +76,7 @@ export class SignerEth {
     // addBufferToData — matching the OneKey SDK's behavior.
     const action = this._sdk.signMessage(derivationPath, hexToBytes(message));
     return deviceActionToPromise<SignerEvmSignature>(
-      action as any,
+      action,
       this.onInteraction,
       INTERACTIVE_TIMEOUT_MS
     );
@@ -92,7 +85,7 @@ export class SignerEth {
   async signTypedData(derivationPath: string, data: unknown): Promise<SignerEvmSignature> {
     const action = this._sdk.signTypedData(derivationPath, data);
     return deviceActionToPromise<SignerEvmSignature>(
-      action as any,
+      action,
       this.onInteraction,
       INTERACTIVE_TIMEOUT_MS
     );

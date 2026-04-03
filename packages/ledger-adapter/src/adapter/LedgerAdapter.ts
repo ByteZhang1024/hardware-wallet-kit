@@ -644,8 +644,8 @@ export class LedgerAdapter implements IHardwareWallet {
       };
 
       // Emit ui-request event — consumer should show "connect and unlock" prompt
-      this.emitter.emit('ui-request-device-connect' as any, {
-        type: 'ui-request-device-connect',
+      this.emitter.emit(UI_REQUEST.REQUEST_DEVICE_CONNECT, {
+        type: UI_REQUEST.REQUEST_DEVICE_CONNECT,
         payload: {
           message: 'Please connect and unlock your Ledger device',
           retryCount: attempt,
@@ -772,11 +772,12 @@ export class LedgerAdapter implements IHardwareWallet {
     try {
       return await this.connector.call(sessionId, method, params);
     } catch (err) {
+      const errObj = err as Record<string, unknown> | null | undefined;
       console.log('[LedgerAdapter] connectorCall error:', method, {
-        message: (err as any)?.message,
-        _tag: (err as any)?._tag,
-        errorCode: (err as any)?.errorCode,
-        statusCode: (err as any)?.statusCode,
+        message: errObj?.message,
+        _tag: errObj?._tag,
+        errorCode: errObj?.errorCode,
+        statusCode: errObj?.statusCode,
         isDisconnected: isDeviceDisconnectedError(err),
         isLocked: isDeviceLockedError(err),
       });
@@ -842,7 +843,12 @@ export class LedgerAdapter implements IHardwareWallet {
 
     // If the error carries an explicit HardwareErrorCode (e.g. validation errors
     // thrown by connector chain methods), use it directly.
-    if (err && typeof err === 'object' && typeof (err as any).code === 'number') {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'code' in err &&
+      typeof (err as { code: unknown }).code === 'number'
+    ) {
       const e = err as { code: number; message?: string };
       return failure(e.code, e.message ?? 'Unknown error');
     }

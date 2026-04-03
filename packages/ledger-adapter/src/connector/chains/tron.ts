@@ -133,7 +133,7 @@ function _isTronWrongAppError(err: unknown): boolean {
   // If the shared detector says "wrong app", trust it
   if (isWrongAppError(err)) return true;
   // Otherwise, check if there's a hex status code in the message
-  const msg = (err as any)?.message ?? '';
+  const msg = err instanceof Error ? err.message : '';
   const match = msg.match(/0x([0-9a-fA-F]{4})/);
   if (!match) return false;
   const sw = parseInt(match[1], 16);
@@ -182,7 +182,11 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
   // Step 2: Disconnect + reconnect to get fresh dashboard session
   console.log(TAG, 'Step 2: disconnect + reconnect to dashboard');
   ctx.clearAllSigners();
-  try { await dm.disconnect(sessionId); } catch { /* may already be disconnected */ }
+  try {
+    await dm.disconnect(sessionId);
+  } catch {
+    /* may already be disconnected */
+  }
   await new Promise(r => setTimeout(r, 1000));
 
   let dashboardSessionId: string | undefined;
@@ -199,14 +203,20 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
 
   if (!dashboardSessionId) {
     console.error(TAG, 'FAILED: could not reconnect to dashboard');
-    ctx.emit('ui-event', { type: EConnectorInteraction.InteractionComplete, payload: { sessionId } });
+    ctx.emit('ui-event', {
+      type: EConnectorInteraction.InteractionComplete,
+      payload: { sessionId },
+    });
     return sessionId;
   }
 
   // Step 3: Open Tron app via DMK command channel
   console.log(TAG, 'Step 3: sendCommand open-app("Tron"), sessionId:', dashboardSessionId);
   try {
-    await dmk.sendCommand({ sessionId: dashboardSessionId, command: { type: 'open-app', appName: 'Tron' } });
+    await dmk.sendCommand({
+      sessionId: dashboardSessionId,
+      command: { type: 'open-app', appName: 'Tron' },
+    });
     console.log(TAG, 'open-app ok');
   } catch (err) {
     console.log(TAG, 'open-app threw:', (err as Error).message);
@@ -214,7 +224,11 @@ async function _openTronApp(ctx: ConnectorContext, sessionId: string): Promise<s
 
   // Step 4: Disconnect + reconnect to get fresh Tron app session
   console.log(TAG, 'Step 4: disconnect + reconnect to Tron app');
-  try { await dm.disconnect(dashboardSessionId); } catch { /* expected */ }
+  try {
+    await dm.disconnect(dashboardSessionId);
+  } catch {
+    /* expected */
+  }
   await new Promise(r => setTimeout(r, 2000));
 
   try {
