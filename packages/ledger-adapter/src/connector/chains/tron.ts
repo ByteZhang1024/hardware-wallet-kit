@@ -1,4 +1,4 @@
-import { EConnectorInteraction } from '@bytezhang/hardware-wallet-core';
+import { EConnectorInteraction, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerTron } from '../../signer/SignerTron';
 import { isWrongAppError } from '../../errors';
@@ -81,7 +81,7 @@ export async function tronSignTransaction(
   if (!params.rawTxHex) {
     throw Object.assign(
       new Error('TRON signing requires a protobuf-encoded raw transaction hex (rawTxHex).'),
-      { code: 7 } // HardwareErrorCode.InvalidParams
+      { code: HardwareErrorCode.InvalidParams }
     );
   }
 

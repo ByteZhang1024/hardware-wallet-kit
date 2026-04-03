@@ -1,4 +1,4 @@
-import { stripHex, hexToBytes, bytesToHex } from '@bytezhang/hardware-wallet-core';
+import { stripHex, hexToBytes, bytesToHex, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerBtc } from '../../signer/SignerBtc';
 import type { ConnectorContext } from './types';
@@ -158,7 +158,7 @@ export async function btcSignTransaction(
   if (!params.psbt) {
     throw Object.assign(
       new Error('Ledger requires PSBT format for BTC transaction signing. Provide params.psbt.'),
-      { code: 7 } // HardwareErrorCode.InvalidParams
+      { code: HardwareErrorCode.InvalidParams }
     );
   }
 

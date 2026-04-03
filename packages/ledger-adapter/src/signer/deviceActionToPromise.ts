@@ -88,8 +88,6 @@ export function deviceActionToPromise<T>(
           const interaction = state.intermediateValue?.requiredUserInteraction;
           if (interaction && interaction !== 'none') {
             onInteraction(interaction);
-          } else if (interaction === 'none') {
-            onInteraction('interaction-complete');
           }
         }
       },

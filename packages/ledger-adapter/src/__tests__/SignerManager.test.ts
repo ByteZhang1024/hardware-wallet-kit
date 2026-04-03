@@ -21,11 +21,11 @@ describe('SignerManager', () => {
     expect(mockSignerBuilder).toHaveBeenCalledWith({ dmk: mockDmk, sessionId: 'session-1' });
   });
 
-  it('should return cached signer for same sessionId', async () => {
+  it('should create fresh signer each time (DMK signers are not reusable)', async () => {
     const first = await manager.getOrCreate('session-1');
     const second = await manager.getOrCreate('session-1');
-    expect(first).toBe(second);
-    expect(mockSignerBuilder).toHaveBeenCalledTimes(1);
+    expect(first).not.toBe(second);
+    expect(mockSignerBuilder).toHaveBeenCalledTimes(2);
   });
 
   it('should create new signer for different sessionId', async () => {

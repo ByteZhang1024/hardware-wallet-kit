@@ -53,15 +53,8 @@ import {
   UI_REQUEST,
   CHAIN_FINGERPRINT_PATHS,
   deriveDeviceFingerprint,
-  batchCall,
 } from '@bytezhang/hardware-wallet-core';
-import {
-  mapLedgerError,
-  isDeviceDisconnectedError,
-  isDeviceLockedError,
-  isWrongAppError,
-} from '../errors';
-import { AppManager } from '../app/AppManager';
+import { mapLedgerError, isDeviceDisconnectedError, isDeviceLockedError } from '../errors';
 
 /**
  * Ledger hardware wallet adapter that delegates to an IConnector.
@@ -253,6 +246,39 @@ export class LedgerAdapter implements IHardwareWallet {
     }
   }
 
+  /**
+   * Batch version of callChain — checks permission and fingerprint once,
+   * then calls the connector for each param sequentially.
+   */
+  private async callChainBatch<TParam, TResult>(
+    connectId: string,
+    deviceId: string,
+    chain: string,
+    method: string,
+    params: TParam[],
+    onProgress?: ProgressCallback,
+    skipFingerprint = false
+  ): Promise<Response<TResult[]>> {
+    await this._ensureDevicePermission(connectId, deviceId);
+    if (
+      !skipFingerprint &&
+      !(await this._verifyDeviceFingerprint(connectId, deviceId, chain as ChainForFingerprint))
+    ) {
+      return failure(HardwareErrorCode.DeviceMismatch, 'Wrong device connected');
+    }
+    const results: TResult[] = [];
+    for (let i = 0; i < params.length; i++) {
+      try {
+        const result = await this.connectorCall(connectId, method, params[i]);
+        results.push(result as TResult);
+        onProgress?.({ index: i, total: params.length });
+      } catch (err) {
+        return this.errorToFailure(err);
+      }
+    }
+    return success(results);
+  }
+
   // ---------------------------------------------------------------------------
   // EVM chain methods
   // ---------------------------------------------------------------------------
@@ -261,32 +287,15 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<EvmAddress>(connectId, deviceId, 'evm', 'evmGetAddress', params);
   }
 
-  evmGetAddresses(
-    connectId: string,
-    deviceId: string,
-    params: EvmGetAddressParams[],
-    onProgress?: ProgressCallback
-  ) {
-    return batchCall(params, p => this.evmGetAddress(connectId, deviceId, p), onProgress);
+  evmGetAddresses(connectId: string, deviceId: string, params: EvmGetAddressParams[], onProgress?: ProgressCallback) {
+    return this.callChainBatch<EvmGetAddressParams, EvmAddress>(connectId, deviceId, 'evm', 'evmGetAddress', params, onProgress);
   }
 
   evmGetPublicKey(connectId: string, deviceId: string, params: EvmGetPublicKeyParams) {
     return this.callChain<EvmPublicKey>(connectId, deviceId, 'evm', 'evmGetAddress', params);
   }
 
-  evmSignTransaction(
-    connectId: string,
-    deviceId: string,
-    params: EvmSignTxParams
-  ): Promise<Response<EvmSignedTx>> {
-    if (!params.serializedTx) {
-      return Promise.resolve(
-        failure(
-          HardwareErrorCode.InvalidParams,
-          'Ledger requires a pre-serialized transaction (serializedTx). Provide an RLP-encoded hex string.'
-        )
-      );
-    }
+  evmSignTransaction(connectId: string, deviceId: string, params: EvmSignTxParams) {
     return this.callChain<EvmSignedTx>(connectId, deviceId, 'evm', 'evmSignTransaction', params);
   }
 
@@ -294,19 +303,7 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<EvmSignature>(connectId, deviceId, 'evm', 'evmSignMessage', params);
   }
 
-  evmSignTypedData(
-    connectId: string,
-    deviceId: string,
-    params: EvmSignTypedDataParams
-  ): Promise<Response<EvmSignature>> {
-    if (params.mode === 'hash') {
-      return Promise.resolve(
-        failure(
-          HardwareErrorCode.MethodNotSupported,
-          'Ledger does not support hash-only EIP-712 signing. Use mode "full" with the complete typed data structure.'
-        )
-      );
-    }
+  evmSignTypedData(connectId: string, deviceId: string, params: EvmSignTypedDataParams) {
     return this.callChain<EvmSignature>(connectId, deviceId, 'evm', 'evmSignTypedData', params);
   }
 
@@ -318,32 +315,15 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<BtcAddress>(connectId, deviceId, 'btc', 'btcGetAddress', params);
   }
 
-  btcGetAddresses(
-    connectId: string,
-    deviceId: string,
-    params: BtcGetAddressParams[],
-    onProgress?: ProgressCallback
-  ) {
-    return batchCall(params, p => this.btcGetAddress(connectId, deviceId, p), onProgress);
+  btcGetAddresses(connectId: string, deviceId: string, params: BtcGetAddressParams[], onProgress?: ProgressCallback) {
+    return this.callChainBatch<BtcGetAddressParams, BtcAddress>(connectId, deviceId, 'btc', 'btcGetAddress', params, onProgress);
   }
 
   btcGetPublicKey(connectId: string, deviceId: string, params: BtcGetPublicKeyParams) {
     return this.callChain<BtcPublicKey>(connectId, deviceId, 'btc', 'btcGetPublicKey', params);
   }
 
-  btcSignTransaction(
-    connectId: string,
-    deviceId: string,
-    params: BtcSignTxParams
-  ): Promise<Response<BtcSignedTx>> {
-    if (!params.psbt) {
-      return Promise.resolve(
-        failure(
-          HardwareErrorCode.InvalidParams,
-          'Ledger requires PSBT format for BTC transaction signing. Provide params.psbt.'
-        )
-      );
-    }
+  btcSignTransaction(connectId: string, deviceId: string, params: BtcSignTxParams) {
     return this.callChain<BtcSignedTx>(connectId, deviceId, 'btc', 'btcSignTransaction', params);
   }
 
@@ -369,13 +349,8 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<SolAddress>(connectId, deviceId, 'sol', 'solGetAddress', params);
   }
 
-  solGetAddresses(
-    connectId: string,
-    deviceId: string,
-    params: SolGetAddressParams[],
-    onProgress?: ProgressCallback
-  ) {
-    return batchCall(params, p => this.solGetAddress(connectId, deviceId, p), onProgress);
+  solGetAddresses(connectId: string, deviceId: string, params: SolGetAddressParams[], onProgress?: ProgressCallback) {
+    return this.callChainBatch<SolGetAddressParams, SolAddress>(connectId, deviceId, 'sol', 'solGetAddress', params, onProgress);
   }
 
   solGetPublicKey(connectId: string, deviceId: string, params: SolGetPublicKeyParams) {
@@ -398,36 +373,12 @@ export class LedgerAdapter implements IHardwareWallet {
     return this.callChain<TronAddress>(connectId, deviceId, 'tron', 'tronGetAddress', params, true);
   }
 
-  tronGetAddresses(
-    connectId: string,
-    deviceId: string,
-    params: TronGetAddressParams[],
-    onProgress?: ProgressCallback
-  ) {
-    return batchCall(params, p => this.tronGetAddress(connectId, deviceId, p), onProgress);
+  tronGetAddresses(connectId: string, deviceId: string, params: TronGetAddressParams[], onProgress?: ProgressCallback) {
+    return this.callChainBatch<TronGetAddressParams, TronAddress>(connectId, deviceId, 'tron', 'tronGetAddress', params, onProgress, true);
   }
 
-  tronSignTransaction(
-    connectId: string,
-    deviceId: string,
-    params: TronSignTxParams
-  ): Promise<Response<TronSignedTx>> {
-    if (!params.rawTxHex) {
-      return Promise.resolve(
-        failure(
-          HardwareErrorCode.InvalidParams,
-          'TRON signing requires a protobuf-encoded raw transaction hex (rawTxHex).'
-        )
-      );
-    }
-    return this.callChain<TronSignedTx>(
-      connectId,
-      deviceId,
-      'tron',
-      'tronSignTransaction',
-      params,
-      true
-    );
+  tronSignTransaction(connectId: string, deviceId: string, params: TronSignTxParams) {
+    return this.callChain<TronSignedTx>(connectId, deviceId, 'tron', 'tronSignTransaction', params, true);
   }
 
   tronSignMessage(connectId: string, deviceId: string, params: TronSignMsgParams) {
@@ -787,32 +738,6 @@ export class LedgerAdapter implements IHardwareWallet {
       if (isDeviceLockedError(err)) {
         await this._waitForDeviceConnect(0);
         return this.connector.call(sessionId, method, params);
-      }
-      if (isWrongAppError(err)) {
-        const METHOD_CHAIN_MAP: Record<string, string> = {
-          evm: 'ETH',
-          btc: 'BTC',
-          sol: 'SOL',
-          tron: 'TRX',
-        };
-        const prefix = method.replace(/[A-Z].*$/, '');
-        const chain = METHOD_CHAIN_MAP[prefix];
-        const appName = chain ? AppManager.getAppName(chain) : undefined;
-        if (appName) {
-          // Notify UI to show "please confirm open app on device"
-          (this.connector as any).emit?.('ui-event', {
-            type: 'confirm-open-app',
-            payload: { chain: appName },
-          });
-          // Open the correct app on device and wait until it's running
-          const dmk = (this.connector as any).getDmk?.();
-          if (dmk) {
-            const mgr = new AppManager(dmk);
-            await mgr.ensureAppOpen(sessionId, appName);
-          }
-          (this.connector as any).emit?.('ui-event', { type: 'interaction-complete' });
-          return this.connector.call(sessionId, method, params);
-        }
       }
       throw err;
     }

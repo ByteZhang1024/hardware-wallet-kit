@@ -53,7 +53,10 @@ describe('deviceActionToPromise', () => {
       { status: 'completed', output: 'done' },
     ]);
     await deviceActionToPromise(action, onInteraction);
-    expect(onInteraction).not.toHaveBeenCalled();
+    // "none" means no user interaction needed — should not fire the interaction name
+    // only "interaction-complete" on completion is expected
+    expect(onInteraction).not.toHaveBeenCalledWith('none');
+    expect(onInteraction).toHaveBeenCalledWith('interaction-complete');
   });
 
   it('should reject if observable completes without result', async () => {

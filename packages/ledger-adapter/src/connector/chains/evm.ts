@@ -1,4 +1,4 @@
-import { stripHex, padHex64 } from '@bytezhang/hardware-wallet-core';
+import { stripHex, padHex64, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import type { SignerEvmSignature } from '../../types';
 import type { ConnectorContext } from './types';
@@ -62,7 +62,7 @@ export async function evmSignTransaction(
       new Error(
         'Ledger requires a pre-serialized transaction (serializedTx). Provide an RLP-encoded hex string.'
       ),
-      { code: 7 } // HardwareErrorCode.InvalidParams
+      { code: HardwareErrorCode.InvalidParams }
     );
   }
 
@@ -112,7 +112,7 @@ export async function evmSignTypedData(
       new Error(
         'Ledger does not support hash-only EIP-712 signing. Use mode "full" with the complete typed data structure.'
       ),
-      { code: 10 } // HardwareErrorCode.MethodNotSupported
+      { code: HardwareErrorCode.MethodNotSupported }
     );
   }
 

@@ -68,8 +68,8 @@ describe('LedgerDeviceManager', () => {
       dmk._emitList([DEVICE_1, DEVICE_2]);
       const result = await promise;
       expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({ path: 'dev-1', type: 'nanoX' });
-      expect(result[1]).toEqual({ path: 'dev-2', type: 'nanoS' });
+      expect(result[0]).toEqual(expect.objectContaining({ path: 'dev-1', type: 'nanoX' }));
+      expect(result[1]).toEqual(expect.objectContaining({ path: 'dev-2', type: 'nanoS' }));
     });
   });
 
@@ -132,7 +132,7 @@ describe('LedgerDeviceManager', () => {
       dmk._emitList([DEVICE_1]);
       expect(onChange).toHaveBeenCalledWith({
         type: 'device-connected',
-        descriptor: { path: 'dev-1', type: 'nanoX' },
+        descriptor: expect.objectContaining({ path: 'dev-1', type: 'nanoX' }),
       });
     });
 

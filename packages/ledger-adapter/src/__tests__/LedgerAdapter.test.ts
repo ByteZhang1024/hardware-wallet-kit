@@ -238,6 +238,13 @@ describe('LedgerAdapter', () => {
     });
 
     it('should reject hash mode', async () => {
+      // Connector validates and throws for hash mode
+      connector.call.mockRejectedValueOnce(
+        Object.assign(
+          new Error('Ledger does not support hash-only EIP-712 signing.'),
+          { code: HardwareErrorCode.MethodNotSupported },
+        ),
+      );
       await adapter.connectDevice('dev-1');
       const result = await adapter.evmSignTypedData('dev-1', '', {
         path: "m/44'/60'/0'/0/0",
