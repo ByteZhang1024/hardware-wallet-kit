@@ -40,11 +40,17 @@ export enum EConnectorInteraction {
   InteractionComplete = 'interaction-complete',
 }
 
+export type ConnectorUiEvent =
+  | { type: EConnectorInteraction.ConfirmOpenApp; payload: { sessionId: string } }
+  | { type: EConnectorInteraction.UnlockDevice; payload: { sessionId: string } }
+  | { type: EConnectorInteraction.ConfirmOnDevice; payload: { sessionId: string } }
+  | { type: EConnectorInteraction.InteractionComplete; payload: { sessionId: string } };
+
 export interface ConnectorEventMap {
   'device-connect': { device: ConnectorDevice };
   'device-disconnect': { connectId: string };
   'ui-request': { type: string; payload?: unknown };
-  'ui-event': { type: string; payload?: unknown };
+  'ui-event': ConnectorUiEvent;
 }
 
 export interface IConnector {

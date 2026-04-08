@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@examples/shared": "0.0.0",
-    "@bytezhang/hardware-trezor-adapter": "0.0.1",
+    "@bytezhang/hardware-trezor-adapter": "*",
     "@trezor/connect-web": "^9.0.0",
-    "@bytezhang/hardware-wallet-core": "0.0.1",
-    "@bytezhang/ledger-adapter": "0.0.1",
+    "@bytezhang/hardware-wallet-core": "*",
+    "@bytezhang/ledger-adapter": "*",
     "@ledgerhq/device-management-kit": "^1.1.0",
     "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "@ledgerhq/device-signer-kit-bitcoin": "^1.0.0",

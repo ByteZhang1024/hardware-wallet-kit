@@ -813,64 +813,35 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@bytezhang/hardware-transport-core@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-transport-core/-/hardware-transport-core-0.0.1.tgz#1e84245a143955ba769a6caf8bfdd37f94e63590"
-  integrity sha512-/0dNxAS4LHoGNw0a7IQXUGmZpzAEJi7zs41/SM19UodQxC98AbFhdRKh+V0DVDAh2SePVNGLmbBdMamCh1wPuQ==
+"@bytezhang/hardware-transport-core@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-transport-core/-/hardware-transport-core-0.0.30.tgz#71ce79ffd6e5db295e198767133ba4e191d84326"
+  integrity sha512-mE3qYEUtebK6xVi6YHUnOB9xB4yU4rFSN9RTIVGBcKATgG5MdTJC0QeCLlvI+crF3fTaQeAnAGtTiiGFCCgZTQ==
 
-"@bytezhang/hardware-transport-core@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-transport-core/-/hardware-transport-core-0.0.9.tgz#e9da93b68cf52b17c38c498d24a515a152328065"
-  integrity sha512-0/njSo8YHuBcH8VObyLSkQyctOilkZvMu8miv9CHovikMr67myuFv+DFYgTi5JfUiZeadFaXT2n38+MonnBOvA==
-
-"@bytezhang/hardware-trezor-adapter@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-trezor-adapter/-/hardware-trezor-adapter-0.0.1.tgz#fba8ce1882945e164647da8aec2f0f0074e71144"
-  integrity sha512-j6yALWGjeLnPRKjGF4jmbQXwAQDRHRT/A45LDA48+kdaa1ZHNFTULjX5c8fgrdZsicIOcHe4a6LuUQfd0iXngA==
+"@bytezhang/hardware-trezor-adapter@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-trezor-adapter/-/hardware-trezor-adapter-0.0.30.tgz#ddc956cc2019a5e8d69fe18371399303ca6c9a23"
+  integrity sha512-cTqGAAYGQpIpjWWJtVCsMKbc/bXHFoUXF2iRMcH7F+KV4yuh0SDoYDePytZVZmoCPIwDBn1e3/5zgXfUP0ykFw==
   dependencies:
-    "@bytezhang/hardware-transport-core" "0.0.1"
-    "@bytezhang/hardware-wallet-core" "0.0.1"
+    "@bytezhang/hardware-transport-core" "0.0.30"
+    "@bytezhang/hardware-wallet-core" "0.0.30"
 
-"@bytezhang/hardware-trezor-adapter@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-trezor-adapter/-/hardware-trezor-adapter-0.0.9.tgz#ebb536c56eb1ae2c4dde42b70c1f473220b264cf"
-  integrity sha512-BceOy2A41BFKQ1fT+qMXLp0KFSk3Bg5esl6+2kjyw/4Pqj9bHVK+AEmnrXMbE61Gi4STkfShTRblKkJRmluHHw==
+"@bytezhang/hardware-wallet-core@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-wallet-core/-/hardware-wallet-core-0.0.30.tgz#5c24816ec28ce61a433d17a08340a102ad39535f"
+  integrity sha512-NqoiCRLiqqPvcxBjcI4dPlY6rSY6PCHulpCFTYYtQBihrurGRnEPgG3/WAr/pdUsamkVaSrq7L/vQlHnPo7dKw==
+
+"@bytezhang/hardware-wallet-core@0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-wallet-core/-/hardware-wallet-core-0.0.40.tgz#8709c520c20580b81a6e3f250bb301581a798e71"
+  integrity sha512-ceJZbYTH6ic/R35nu8Ne8n+knWFqO2cyQQWKyCiM7MN8vvNeknST/tPpoZBLZ0jEHwoKitix4MFDFa7Rvu+jhg==
+
+"@bytezhang/trezor-transport-electron@*":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@bytezhang/trezor-transport-electron/-/trezor-transport-electron-0.0.30.tgz#03f42cc31f33f1b60e8b86a988edba3ac6b3b577"
+  integrity sha512-aXVCCdfXtA/w5VLJ4K4P+fkxQ7ZhcY7s2Mhy+Pw5byDk8uPFNIlfJtFqDg/DyH1kQztyc+GBK8+DKeZaKBXoug==
   dependencies:
-    "@bytezhang/hardware-transport-core" "0.0.1"
-    "@bytezhang/hardware-wallet-core" "0.0.1"
-
-"@bytezhang/hardware-wallet-core@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-wallet-core/-/hardware-wallet-core-0.0.1.tgz#51c85f42b6a6bf4b57b2440a104abee675c2d3d8"
-  integrity sha512-aj5w9hhww5YKDd3Ka7i+RmQJJR89Vatp/V55XL1vZ9Sl0POlfcflc/Iv2H31VEKygC05Hvg1Qyhsmjgc/Tyx5A==
-
-"@bytezhang/hardware-wallet-core@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@bytezhang/hardware-wallet-core/-/hardware-wallet-core-0.0.9.tgz#322b6de85c770736d9ed13bbf14fac6959f0d528"
-  integrity sha512-TGa8GeGo/tUoFNDMeUcydJDm4hfhAPyRRaEtHB4u+muKQbE6SUgJ5YRjGhOKbwUTgWotDbOJDAm0oiq6wBlKEA==
-
-"@bytezhang/ledger-adapter@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bytezhang/ledger-adapter/-/ledger-adapter-0.0.1.tgz#28ccb101626fbd36323da7784da9ce04003b9e50"
-  integrity sha512-KFVeBD38mhKF/1Ix3ClfzSY2c9yaSaMh9W/+zvQX+6rDwLFOT4vAONq/+EZ+UHu5FU8Necn76hTr6/+gIINgtA==
-  dependencies:
-    "@bytezhang/hardware-wallet-core" "0.0.1"
-    rxjs "^7.8.1"
-
-"@bytezhang/ledger-adapter@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@bytezhang/ledger-adapter/-/ledger-adapter-0.0.9.tgz#b47480dac8ca8188772e8630e0889a208cae69b1"
-  integrity sha512-R2g1XGgGkpBjNhFNlZS1M11QxbjKYxkYFUaEt6olg2ho31b1zUu9soOTp6WsEb0F3/HkN3P9ShckdKFSvc/9YA==
-  dependencies:
-    "@bytezhang/hardware-wallet-core" "0.0.1"
-    rxjs "^7.8.1"
-
-"@bytezhang/trezor-transport-electron@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bytezhang/trezor-transport-electron/-/trezor-transport-electron-0.0.1.tgz#84a7e0278b1fc5b829b0f8762fe8df54c287cb1d"
-  integrity sha512-fgaud9ZixwR8gp0EAwDVQ3/5bUPOR3vHQT97lNUMNkkt8SvV9Rs+gSWjSKL9rDVgSlZ3epxMkD4rSugvXBmqHA==
-  dependencies:
-    "@bytezhang/hardware-trezor-adapter" "0.0.1"
+    "@bytezhang/hardware-trezor-adapter" "0.0.30"
 
 "@changesets/apply-release-plan@^7.0.14":
   version "7.0.14"
@@ -2218,6 +2189,43 @@
     "@sentry/minimal" "6.19.7"
     purify-ts "2.1.0"
     uuid "11.0.3"
+
+"@ledgerhq/devices@8.13.0":
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-8.13.0.tgz#20aead87984188059ea8ef8cedeb84014bb4ae42"
+  integrity sha512-hgGn1kpe/rT0EJ0Qs7rG+1TXA4g6HN2t3dB4DndRTqVqC9aSSbME+ajA0QWLZisxOD3zkwvO4Q0mJ2zARAKyag==
+  dependencies:
+    "@ledgerhq/errors" "^6.32.0"
+    "@ledgerhq/logs" "^6.16.0"
+    rxjs "7.8.2"
+    semver "7.7.3"
+
+"@ledgerhq/errors@^6.32.0":
+  version "6.32.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.32.0.tgz#50759e07137336b285c1cfd63d1e8a09d6865e26"
+  integrity sha512-BjjvhLM6UXYUbhllqAduo9PSneLt9FXZ3TBEUFQ3MMSZOCHt0gAgDySLwul99R8fdYWkXBza4DYQjUNckpN2lg==
+
+"@ledgerhq/hw-app-trx@^6.34.1":
+  version "6.34.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-trx/-/hw-app-trx-6.34.1.tgz#5631ab38a5a70b3c463fe168e896874821e7e5a7"
+  integrity sha512-kWDF+/UEc5LqRx3p8Raqw+yI006bBUMC+Twfutw3NHHb1L1BPJlddbgXkMSGFvbD+mKUhXQIAXC7QUWgco6gYA==
+  dependencies:
+    "@ledgerhq/hw-transport" "6.34.1"
+
+"@ledgerhq/hw-transport@6.34.1":
+  version "6.34.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.34.1.tgz#ad0d15116454700f84797d861e9e2e19c14bdb17"
+  integrity sha512-Bg9Qk2vtm0m0cZn9prZV2Hbvh3b42KBh4uomO00derh+eiwsdg5AXBBptAJiREkew1RVtETRdWxrKchUJfeWvA==
+  dependencies:
+    "@ledgerhq/devices" "8.13.0"
+    "@ledgerhq/errors" "^6.32.0"
+    "@ledgerhq/logs" "^6.16.0"
+    events "^3.3.0"
+
+"@ledgerhq/logs@^6.16.0":
+  version "6.16.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.16.0.tgz#e5284bdce9d3177d55ff29fe76fc058bb9f3c851"
+  integrity sha512-v/PLfb1dq1En35kkpbfRWp8jLYgbPUXxGhmd4pmvPSIe0nRGkNTomsZASmWQAv6pRonVGqHIBVlte7j1MBbOww==
 
 "@ledgerhq/signer-utils@^1.1.2":
   version "1.1.2"
@@ -10198,7 +10206,7 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rxjs@^7.8.1:
+rxjs@7.8.2, rxjs@^7.8.1:
   version "7.8.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.2.tgz#955bc473ed8af11a002a2be52071bf475638607b"
   integrity sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==
@@ -10276,6 +10284,11 @@ semver@7.7.2:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.2.tgz#67d99fdcd35cec21e6f8b87a7fd515a33f982b58"
   integrity sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==
 
+semver@7.7.3, semver@^7.5.3, semver@^7.7.3:
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.3.tgz#4b5f4143d007633a8dc671cd0a6ef9147b8bb946"
+  integrity sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==
+
 semver@^5.5.0, semver@^5.6.0:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
@@ -10290,11 +10303,6 @@ semver@^7.1.3, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5, semver@^7.5.4, semve
   version "7.7.4"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.4.tgz#28464e36060e991fa7a11d0279d2d3f3b57a7e8a"
   integrity sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==
-
-semver@^7.5.3, semver@^7.7.3:
-  version "7.7.3"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.3.tgz#4b5f4143d007633a8dc671cd0a6ef9147b8bb946"
-  integrity sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==
 
 semver@~7.6.3:
   version "7.6.3"

@@ -1,6 +1,6 @@
 {
   "name": "@bytezhang/ledger-adapter",
-  "version": "0.0.37",
+  "version": "0.0.42",
   "description": "Ledger hardware wallet adapter for OneKey",
   "author": "OneKey",
   "license": "MIT",
@@ -55,12 +55,13 @@
     "crypto"
   ],
   "dependencies": {
-    "@bytezhang/hardware-wallet-core": "0.0.37",
+    "@bytezhang/hardware-wallet-core": "0.0.42",
     "@ledgerhq/context-module": "^1.0.0",
     "@ledgerhq/device-management-kit": "^1.1.0",
-    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "@ledgerhq/device-signer-kit-bitcoin": "^1.0.0",
+    "@ledgerhq/device-signer-kit-ethereum": "^1.9.0",
     "@ledgerhq/device-signer-kit-solana": "^1.7.0",
+    "@ledgerhq/hw-app-trx": "^6.34.1",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {

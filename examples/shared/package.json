@@ -7,7 +7,7 @@
     "build": "echo skip"
   },
   "dependencies": {
-    "@bytezhang/hardware-wallet-core": "0.0.1",
+    "@bytezhang/hardware-wallet-core": "*",
     "react": "^18.3.0"
   },
   "peerDependencies": {

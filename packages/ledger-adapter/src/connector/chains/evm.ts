@@ -1,4 +1,4 @@
-import { stripHex, padHex64, HardwareErrorCode } from '@bytezhang/hardware-wallet-core';
+import { stripHex, padHex64, HardwareErrorCode, EConnectorInteraction } from '@bytezhang/hardware-wallet-core';
 import type { TypedData } from '@ledgerhq/device-signer-kit-ethereum';
 import { normalizePath } from './utils';
 import type { SignerEvmSignature } from '../../types';
@@ -143,7 +143,7 @@ async function _getEthSigner(ctx: ConnectorContext, sessionId: string) {
   // Wire up interaction events (open-app, unlock, verify-address, sign, etc.)
   signer.onInteraction = (interaction: string) => {
     ctx.emit('ui-event', {
-      type: interaction,
+      type: interaction as EConnectorInteraction,
       payload: { sessionId },
     });
   };

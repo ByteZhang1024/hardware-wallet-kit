@@ -3,6 +3,7 @@ import {
   hexToBytes,
   bytesToHex,
   HardwareErrorCode,
+  EConnectorInteraction,
 } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerBtc } from '../../signer/SignerBtc';
@@ -261,7 +262,7 @@ async function _createBtcSigner(ctx: ConnectorContext, sessionId: string): Promi
   // Wire up interaction events (open-app, unlock, sign, etc.)
   signer.onInteraction = (interaction: string) => {
     ctx.emit('ui-event', {
-      type: interaction,
+      type: interaction as EConnectorInteraction,
       payload: { sessionId },
     });
   };

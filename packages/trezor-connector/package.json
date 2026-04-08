@@ -23,6 +23,6 @@
     "@trezor/connect-web": "^9.0.0"
   },
   "dependencies": {
-    "@bytezhang/hardware-wallet-core": "0.0.32"
+    "@bytezhang/hardware-wallet-core": "0.0.40"
   }
 }

@@ -55,7 +55,7 @@ import {
   CHAIN_FINGERPRINT_PATHS,
   deriveDeviceFingerprint,
 } from '@bytezhang/hardware-wallet-core';
-import { mapLedgerError, isDeviceDisconnectedError, isDeviceLockedError } from '../errors';
+import { mapLedgerError, isDeviceDisconnectedError, isDeviceLockedError, isTimeoutError } from '../errors';
 
 /**
  * Ledger hardware wallet adapter that delegates to an IConnector.
@@ -784,21 +784,36 @@ export class LedgerAdapter implements IHardwareWallet {
       });
       if (isDeviceDisconnectedError(err)) {
         console.log('[LedgerAdapter] disconnected, retrying with fresh connection...');
-        this._sessions.delete(resolvedConnectId);
         this._discoveredDevices.clear();
-        const retryConnectId = await this.ensureConnected();
-        const retrySessionId = this._sessions.get(retryConnectId);
-        if (!retrySessionId) {
-          throw err;
-        }
-        return this.connector.call(retrySessionId, method, params);
+        return this._retryWithFreshConnection(resolvedConnectId, method, params, err);
       }
       if (isDeviceLockedError(err)) {
         await this._waitForDeviceConnect(0);
         return this.connector.call(sessionId, method, params);
       }
+      if (isTimeoutError(err)) {
+        console.log('[LedgerAdapter] timeout, retrying with fresh connection...');
+        this._discoveredDevices.delete(resolvedConnectId);
+        return this._retryWithFreshConnection(resolvedConnectId, method, params, err);
+      }
       throw err;
     }
+  }
+
+  /** Clear stale session, reconnect, and retry the call. */
+  private async _retryWithFreshConnection(
+    resolvedConnectId: string,
+    method: string,
+    params: unknown,
+    originalErr: unknown,
+  ): Promise<unknown> {
+    this._sessions.delete(resolvedConnectId);
+    const retryConnectId = await this.ensureConnected();
+    const retrySessionId = this._sessions.get(retryConnectId);
+    if (!retrySessionId) {
+      throw originalErr;
+    }
+    return this.connector.call(retrySessionId, method, params);
   }
 
   /**

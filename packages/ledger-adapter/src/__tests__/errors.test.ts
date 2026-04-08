@@ -157,16 +157,20 @@ describe('isDeviceDisconnectedError', () => {
 // ---------------------------------------------------------------------------
 
 describe('isTimeoutError', () => {
-  it('should detect "timeout" in message', () => {
-    expect(isTimeoutError({ message: 'Operation timeout' })).toBe(true);
-  });
-
-  it('should detect "timed out" in message', () => {
-    expect(isTimeoutError({ message: 'Request timed out' })).toBe(true);
-  });
-
   it('should detect _tag DeviceExchangeTimeoutError', () => {
     expect(isTimeoutError({ _tag: 'DeviceExchangeTimeoutError' })).toBe(true);
+  });
+
+  it('should detect _tag SendApduTimeoutError', () => {
+    expect(isTimeoutError({ _tag: 'SendApduTimeoutError' })).toBe(true);
+  });
+
+  it('should detect _tag SendCommandTimeoutError', () => {
+    expect(isTimeoutError({ _tag: 'SendCommandTimeoutError' })).toBe(true);
+  });
+
+  it('should NOT match arbitrary "timeout" in message', () => {
+    expect(isTimeoutError({ message: 'Operation timeout' })).toBe(false);
   });
 });
 
@@ -200,9 +204,8 @@ describe('mapLedgerError', () => {
   });
 
   it('should map timeout to OperationTimeout', () => {
-    const result = mapLedgerError(new Error('Request timed out'));
+    const result = mapLedgerError(Object.assign(new Error('APDU timeout'), { _tag: 'SendApduTimeoutError' }));
     expect(result.code).toBe(HardwareErrorCode.OperationTimeout);
-    expect(result.message).toContain('timed out');
   });
 
   it('should fall through to UnknownError for unrecognized errors', () => {

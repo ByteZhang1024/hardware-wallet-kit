@@ -1,4 +1,4 @@
-import { hexToBytes, bytesToHex } from '@bytezhang/hardware-wallet-core';
+import { hexToBytes, bytesToHex, EConnectorInteraction } from '@bytezhang/hardware-wallet-core';
 import { normalizePath } from './utils';
 import { SignerSol } from '../../signer/SignerSol';
 import type { ConnectorContext } from './types';
@@ -98,7 +98,7 @@ async function _createSolSigner(ctx: ConnectorContext, sessionId: string): Promi
   // Wire up interaction events (verify-address, sign, etc.)
   signer.onInteraction = (interaction: string) => {
     ctx.emit('ui-event', {
-      type: interaction,
+      type: interaction as EConnectorInteraction,
       payload: { sessionId },
     });
   };

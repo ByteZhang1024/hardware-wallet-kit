@@ -103,12 +103,22 @@ export function isDeviceDisconnectedError(err: unknown): boolean {
   return false;
 }
 
-/** Check for timeout errors. */
+/**
+ * DMK timeout error _tag values.
+ * These are the concrete error classes from @ledgerhq/device-management-kit.
+ */
+const TIMEOUT_TAGS = new Set([
+  'DeviceExchangeTimeoutError',
+  'SendApduTimeoutError',
+  'SendCommandTimeoutError',
+]);
+
+/** Check for timeout errors using DMK's _tag identifiers or wrapped error code. */
 export function isTimeoutError(err: unknown): boolean {
   if (!err || typeof err !== 'object') return false;
   const e = err as Record<string, unknown>;
-  if (typeof e.message === 'string' && /timeout|timed?\s*out/i.test(e.message)) return true;
-  if (e._tag === 'DeviceExchangeTimeoutError') return true;
+  if (typeof e._tag === 'string' && TIMEOUT_TAGS.has(e._tag)) return true;
+  if (e.code === HardwareErrorCode.OperationTimeout) return true;
   return false;
 }
 
