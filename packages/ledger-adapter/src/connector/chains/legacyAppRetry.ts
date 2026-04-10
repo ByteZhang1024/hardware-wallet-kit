@@ -63,11 +63,21 @@ export async function withLegacyAppRetry<T>(
     if (isLegacyWrongAppError(err, appName)) {
       const dmk = await ctx.getOrCreateDmk();
       const appManager = new AppManager(dmk);
-      ctx.emit('ui-event', {
-        type: EConnectorInteraction.ConfirmOpenApp,
-        payload: { sessionId },
-      });
-      await appManager.ensureAppOpen(sessionId, appName);
+      try {
+        await appManager.ensureAppOpen(sessionId, appName, () => {
+          // Device is showing the confirm prompt — now it's safe to notify UI
+          ctx.emit('ui-event', {
+            type: EConnectorInteraction.ConfirmOpenApp,
+            payload: { sessionId },
+          });
+        });
+      } catch (switchErr) {
+        ctx.emit('ui-event', {
+          type: EConnectorInteraction.InteractionComplete,
+          payload: { sessionId },
+        });
+        throw ctx.wrapError(switchErr);
+      }
       ctx.clearAllSigners();
       ctx.emit('ui-event', {
         type: EConnectorInteraction.InteractionComplete,

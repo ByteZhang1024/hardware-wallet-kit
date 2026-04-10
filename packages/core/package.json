@@ -1,6 +1,6 @@
 {
   "name": "@bytezhang/hardware-wallet-core",
-  "version": "0.0.42",
+  "version": "0.0.44",
   "description": "Shared types and utilities for OneKey hardware wallet kit",
   "author": "OneKey",
   "license": "MIT",

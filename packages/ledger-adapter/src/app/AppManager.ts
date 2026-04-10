@@ -62,7 +62,16 @@ export class AppManager {
    * 4. Open the target app.
    * 5. Poll until the device confirms the target app is running.
    */
-  async ensureAppOpen(sessionId: string, targetAppName: string): Promise<void> {
+  /**
+   * @param onConfirmOnDevice Called after OpenAppCommand succeeds —
+   *   the device is now showing a confirmation prompt to the user.
+   *   NOT called if the app is already open or if the app is not installed.
+   */
+  async ensureAppOpen(
+    sessionId: string,
+    targetAppName: string,
+    onConfirmOnDevice?: () => void,
+  ): Promise<void> {
     const currentApp = await this._getCurrentApp(sessionId);
 
     if (currentApp === targetAppName) {
@@ -76,8 +85,11 @@ export class AppManager {
       await this._waitForApp(sessionId, DASHBOARD_APP_NAME);
     }
 
-    // Open the target app
+    // Open the target app — throws if not installed (0x6807)
     await this._openApp(sessionId, targetAppName);
+
+    // Device is now showing the confirm prompt
+    onConfirmOnDevice?.();
 
     // Poll until the target app is confirmed open
     await this._waitForApp(sessionId, targetAppName);
@@ -99,10 +111,17 @@ export class AppManager {
   }
 
   private async _openApp(sessionId: string, appName: string): Promise<void> {
-    await this._dmk.sendCommand({
+    const result = await this._dmk.sendCommand({
       sessionId,
       command: new OpenAppCommand({ appName }),
     });
+    if (!isSuccessCommandResult(result)) {
+      const statusCode = (result as Record<string, unknown>).statusCode;
+      throw Object.assign(
+        new Error(`Failed to open "${appName}": app may not be installed`),
+        { _tag: 'OpenAppCommandError', errorCode: String(statusCode ?? ''), statusCode },
+      );
+    }
   }
 
   private async _closeCurrentApp(sessionId: string): Promise<void> {
